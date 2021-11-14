@@ -23,6 +23,9 @@ class Agreement(models.Model):
         managed = False
         db_table = 'agreement'
 
+    def __str__(self):
+        return self.id
+
 
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
@@ -101,6 +104,9 @@ class City(models.Model):
         managed = False
         db_table = 'city'
 
+    def __str__(self):
+        return self.city
+
 
 class Client(models.Model):
     fio = models.CharField(max_length=256)
@@ -121,6 +127,9 @@ class Client(models.Model):
         managed = False
         db_table = 'client'
 
+    def __str__(self):
+        return self.fio
+
 
 class Contract(models.Model):
     date = models.DateField()
@@ -138,6 +147,9 @@ class Contract(models.Model):
         managed = False
         db_table = 'contract'
 
+    def __str__(self):
+        return self.id
+
 
 class Currency(models.Model):
     code = models.IntegerField()
@@ -147,6 +159,9 @@ class Currency(models.Model):
     class Meta:
         managed = False
         db_table = 'currency'
+
+    def __str__(self):
+        return self.name
 
 
 class DjangoAdminLog(models.Model):
@@ -206,16 +221,22 @@ class Employee(models.Model):
         managed = False
         db_table = 'employee'
 
+    def __str__(self):
+        return self.fio
+
 
 class Hotel(models.Model):
     city = models.ForeignKey(City, models.DO_NOTHING, db_column='city')
     name = models.CharField(max_length=256)
-    stars = models.IntegerField()
+    stars = models.CharField(max_length=32)
     address = models.CharField(max_length=512)
 
     class Meta:
         managed = False
         db_table = 'hotel'
+
+    def __str__(self):
+        return self.name
 
 
 class InternationalPassport(models.Model):
@@ -234,6 +255,9 @@ class InternationalPassport(models.Model):
         managed = False
         db_table = 'international_passport'
 
+    def __str__(self):
+        return self.fio
+
 
 class Organization(models.Model):
     name = models.CharField(max_length=32)
@@ -241,6 +265,9 @@ class Organization(models.Model):
     class Meta:
         managed = False
         db_table = 'organization'
+
+    def __str__(self):
+        return self.name
 
 
 class Payment(models.Model):
@@ -253,6 +280,9 @@ class Payment(models.Model):
         managed = False
         db_table = 'payment'
 
+    def __str__(self):
+        return self.id
+
 
 class PositionEmployee(models.Model):
     name = models.CharField(max_length=32)
@@ -260,6 +290,9 @@ class PositionEmployee(models.Model):
     class Meta:
         managed = False
         db_table = 'position_employee'
+
+    def __str__(self):
+        return self.name
 
 
 class Reservation(models.Model):
@@ -276,6 +309,9 @@ class Reservation(models.Model):
         managed = False
         db_table = 'reservation'
 
+    def __str__(self):
+        return self.hotel
+
 
 class RoomType(models.Model):
     type = models.CharField(max_length=32)
@@ -285,6 +321,9 @@ class RoomType(models.Model):
         managed = False
         db_table = 'room_type'
 
+    def __str__(self):
+        return self.type
+
 
 class StatusClient(models.Model):
     name = models.CharField(max_length=32)
@@ -292,6 +331,9 @@ class StatusClient(models.Model):
     class Meta:
         managed = False
         db_table = 'status_client'
+
+    def __str__(self):
+        return self.name
 
 
 class Ticket(models.Model):
@@ -304,6 +346,9 @@ class Ticket(models.Model):
         managed = False
         db_table = 'ticket'
 
+    def __str__(self):
+        return self.id
+
 
 class TransportType(models.Model):
     name = models.CharField(max_length=32)
@@ -311,3 +356,7 @@ class TransportType(models.Model):
     class Meta:
         managed = False
         db_table = 'transport_type'
+
+    def __str__(self):
+        return self.name
+
