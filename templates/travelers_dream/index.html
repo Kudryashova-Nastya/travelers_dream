@@ -9,12 +9,14 @@
     <a class="btn btn-success mb-2" href="{% url 'createEmployee' %}">Добавить сотрудника</a>
     {% if employees %}
         {% for el in employees %}
-            <div class="alert alert-dismissible alert-light">
-                <h5>{{ el.fio }}</h5>
-            <p>
-                {{ el.position }}
-            </p>
-            </div>
+            <a href="/employee/{{ el.id }}" style="text-decoration: none">
+                <div class="alert alert-dismissible alert-light">
+                    <h5>{{ el.fio }}</h5>
+                <p>
+                    {{ el.position }}
+                </p>
+                </div>
+            </a>
         {% endfor %}
     {% else %}
         <p>Нет ни одного сотрудника</p>
