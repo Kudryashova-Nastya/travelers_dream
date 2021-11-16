@@ -1,6 +1,9 @@
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+
 from .models import Employee, Client, PositionEmployee, Organization, StatusClient
-from .forms import EmployeeCreateForm, ClientCreateForm
+from .forms import EmployeeCreateForm, ClientCreateForm, AuthUserForm
 
 
 # from django.http import HttpResponse
@@ -81,6 +84,12 @@ def create_client(request):
 
     statuses = StatusClient.objects.all()
     return render(request, 'travelers_dream/create_client.html', {'statuses': statuses, 'error': error})
+
+
+class Login(LoginView):
+    template_name = "travelers_dream/login.html"
+    form_class = AuthUserForm
+    success_url = reverse_lazy("employees")
 
 
 
