@@ -115,12 +115,12 @@ class Client(models.Model):
     place = models.CharField(max_length=256)
     passport_series = models.IntegerField(blank=True, null=True)
     passport_number = models.IntegerField(blank=True, null=True)
-    date_issue = models.DateField()
-    date_end = models.DateField()
-    issued_by = models.CharField(max_length=256)
+    date_issue = models.DateField(blank=True, null=True)
+    date_end = models.DateField(blank=True, null=True)
+    issued_by = models.CharField(max_length=256, blank=True, null=True)
     international_passport = models.ForeignKey('InternationalPassport', models.DO_NOTHING, blank=True, null=True)
     status = models.ForeignKey('StatusClient', models.DO_NOTHING, db_column='status')
-    doc_type = models.CharField(max_length=24)
+    doc_type = models.CharField(max_length=24, default='Паспорт')
     birth_certificate = models.CharField(max_length=32, blank=True, null=True)
 
     class Meta:

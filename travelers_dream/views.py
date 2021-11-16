@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Employee, Client, PositionEmployee, Organization
-from .forms import EmployeeCreateForm
+from .models import Employee, Client, PositionEmployee, Organization, StatusClient
+from .forms import EmployeeCreateForm, ClientCreateForm
 
 
 # from django.http import HttpResponse
@@ -53,3 +53,36 @@ def create_employee(request):
     organizations = Organization.objects.all()
     return render(request, 'travelers_dream/create_employee.html', {'positions': positions,
                                                                     'organizations': organizations, 'error': error})
+
+
+def client(request, id):
+    error = ''
+    person = Client.objects.get(id=id)
+    if request.method == 'POST':
+        form = ClientCreateForm(request.POST, instance=person)
+        if form.is_valid():
+            form.save()
+            return redirect('clients')
+        else:
+            error = 'Форма заполнена некорректно'
+    statuses = StatusClient.objects.all()
+    return render(request, 'travelers_dream/client.html', {'client': person, 'statuses': statuses, 'error': error})
+
+
+def create_client(request):
+    error = ''
+    if request.method == 'POST':
+        form = ClientCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('clients')
+        else:
+            error = 'Форма заполнена некорректно'
+
+    statuses = StatusClient.objects.all()
+    return render(request, 'travelers_dream/create_client.html', {'statuses': statuses, 'error': error})
+
+
+
+
+

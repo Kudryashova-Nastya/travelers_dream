@@ -6,4 +6,28 @@
 
 {% block content %}
     <h1 class="mb-4">Клиенты</h1>
+    <a class="btn btn-success mb-2" href="{% url 'createClient' %}">Добавить клиента</a>
+    {% if clients %}
+        {% for el in clients %}
+                <div class="alert alert-dismissible alert-light row">
+                    <div class="col-10">
+                        <h5>{{ el.fio }}</h5>
+                        <p>
+                            {{ el.status }}
+                        </p>
+                    </div>
+                    <div class="col-2">
+                        <a href="/client/{{ el.id }}" class="btn btn-primary mb-2">Редактировать</a>
+{#                        {% if el.international_passport %}#}
+{#                            <a href="/client/{{ el.id }}" class="btn btn-primary">Изменить загранпаспорт</a>#}
+{#                        {% else %}#}
+{#                            <a href="/client/{{ el.id }}" class="btn btn-primary">Добавить загранпаспорт</a>#}
+{#                        {% endif %}#}
+
+                    </div>
+                </div>
+        {% endfor %}
+    {% else %}
+        <p>Нет ни одного клиента</p>
+    {% endif %}
 {% endblock %}
