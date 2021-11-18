@@ -30,17 +30,19 @@
                 <label for="position" class="form-label">Должность</label>
                 <select class="form-select mb-3" id="position" name="position">
                     {% for el in positions %}
-                        <option value="{{ el.id }}" {% if employee.position == el %} selected {% endif %}>
-                            {{ el.name }}
-                        </option>
+                        {% if el.name != "Администратор" %}
+                            <option value="{{ el.id }}" {% if employee.position == el %} selected {% endif %}>
+                                {{ el.name }}
+                            </option>
+                        {% endif %}
                     {% endfor %}
                 </select>
             <label for="organization" class="form-label">Филиал</label>
                 <select class="form-select mb-3" id="organization" name="organization">
                     {% for el in organizations %}
-                        <option value="{{ el.id }}" {% if el == employee.organization %} selected {% endif %}>
-                            {{ el }}
-                        </option>
+                            <option value="{{ el.id }}" {% if el == employee.organization %} selected {% endif %}>
+                                {{ el }}
+                            </option>
                     {% endfor %}
                 </select>
                 <button type="submit" class="btn btn-success">Изменить</button>

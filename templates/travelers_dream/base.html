@@ -15,16 +15,20 @@
             <span class="fs-4">Traveler's dream</span>
           </a>
             {% if request.user.is_superuser %}
-                <span> | Администратор </span>
+                <span class="align-items-center fs-5"> &nbsp;| Администратор </span>
             {% elif request.user.is_staff %}
-                <span> | {{ employee_now.initials }} </span>
+                <span class="align-items-center fs-5"> &nbsp;| {{ employee_now.position }} {{ employee_now.initials }} </span>
             {% endif %}
             <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
                 {% if request.user.is_superuser %}
                     <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'employees' %}">Сотрудники</a>
                     <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'clients' %}">Клиенты</a>
                 {% endif %}
-                <a class="btn btn-outline-primary" href="{% url 'login' %}">Выйти</a>
+                {% if request.user.is_authenticated %}
+                    <a class="btn btn-outline-primary" href="{% url 'logout' %}">Выйти</a>
+                {% else %}
+                    <a class="btn btn-outline-primary" href="{% url 'login' %}">Войти в систему</a>
+                {% endif %}
             </nav>
     </div>
     <div class="container">

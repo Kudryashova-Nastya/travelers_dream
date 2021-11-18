@@ -27,9 +27,11 @@
                 <label for="position" class="form-label">Должность</label>
                 <select class="form-select mb-3" id="position" name="position">
                     {% for el in positions %}
-                        <option value="{{ el.id }}">
-                            {{ el.name }}
-                        </option>
+                        {% if el.name != "Администратор" %}
+                            <option value="{{ el.id }}">
+                                {{ el.name }}
+                            </option>
+                        {% endif %}
                     {% endfor %}
                 </select>
             <label for="organization" class="form-label">Филиал</label>

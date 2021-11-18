@@ -1,10 +1,12 @@
 from django.urls import path, include
 from . import views
+from django.contrib.auth.views import LogoutView
 
 
 urlpatterns = [
-    path('', views.Login.as_view(), name="login"),
-    path('employees', views.index, name="employees"),
+    path('login', views.Login.as_view(), name="login"),
+    path('logout', LogoutView.as_view(next_page="login"), name='logout'),
+    path('', views.index, name="employees"),
     path('clients', views.clients, name="clients"),
     path('create-employee', views.create_employee, name="createEmployee"),
     path('employee/<int:id>', views.employee, name="employee"),
