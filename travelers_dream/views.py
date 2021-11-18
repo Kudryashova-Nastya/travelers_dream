@@ -9,7 +9,12 @@ from .forms import EmployeeCreateForm, ClientCreateForm, AuthUserForm
 # from django.http import HttpResponse
 
 def index(request):
-    employees = Employee.objects.all()
+    search_query = request.GET.get('search', '')
+
+    if search_query:
+        employees = Employee.objects.filter(fio__icontains=search_query)
+    else:
+        employees = Employee.objects.all()
     return render(request, 'travelers_dream/index.html', {'employees': employees})
 
 

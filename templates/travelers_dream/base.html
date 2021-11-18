@@ -10,19 +10,27 @@
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </head>
 <body class="p-3">
-<div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
-      <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
-        <span class="fs-4">Traveler's dream</span>
-      </a>
-
-      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-        <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'employees' %}">Сотрудники</a>
-        <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'clients' %}">Клиенты</a>
-      </nav>
-    <a class="btn btn-outline-primary" href="{% url 'login' %}">Выйти</a>
+    <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+          <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+            <span class="fs-4">Traveler's dream</span>
+          </a>
+            {% if request.user.is_superuser %}
+                <span> | Администратор </span>
+            {% elif request.user.is_staff %}
+                <span> | {{ employee_now.initials }} </span>
+            {% endif %}
+            <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+                {% if request.user.is_superuser %}
+                    <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'employees' %}">Сотрудники</a>
+                    <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'clients' %}">Клиенты</a>
+                {% endif %}
+                <a class="btn btn-outline-primary" href="{% url 'login' %}">Выйти</a>
+            </nav>
     </div>
-<div class="container">
-    {% block content %}{% endblock %}
-</div>
+    <div class="container">
+        {% if request.user.is_superuser %}
+            {% block content_admin %}{% endblock %}
+        {% endif %}
+    </div>
 </body>
 </html>

@@ -4,7 +4,16 @@
     Главная
 {% endblock %}
 
-{% block content %}
+{% block content_admin %}
+    <form method="get" action="" class="row">
+        <div class="col-11">
+            <input type="text" placeholder="Поиск сотрудников" name="search" required
+                           class="mb-3 form-control">
+        </div>
+        <div class="col-1">
+            <button type="submit" class="btn btn-primary">Искать</button>
+        </div>
+    </form>
     <h1 class="mb-4">Сотрудники</h1>
     <a class="btn btn-success mb-2" href="{% url 'createEmployee' %}">Добавить сотрудника</a>
     {% if employees %}

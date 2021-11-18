@@ -4,7 +4,7 @@
     Страница сотрудника
 {% endblock %}
 
-{% block content %}
+{% block content_admin %}
     <a class="btn btn-outline-dark mb-2 btn-sm" href="{% url 'employees' %}">Назад</a>
     <h1 class="mb-4">{{ employee.fio }}</h1>
     <div class="row">
@@ -48,7 +48,8 @@
         </div>
         <div class="col-6">
             {% if employee.photo %}
-                <img src="{{ employee.photo }}" alt="фотография сотрудника">
+                <img src="{{ employee.photo }}" alt="фотография сотрудника" style="max-width: 100%;"><br>
+                <a href="{{ employee.photo }}" download="сотрудник" class="btn btn-success btn-sm mt-2">Скачать фотографию</a>
             {% else %}
                 <p>У сотрудника нет фотографии</p>
             {% endif %}
