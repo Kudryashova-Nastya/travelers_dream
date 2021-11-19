@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content_admin %}
+    <h1 class="mb-4">Сотрудники</h1>
     <form method="get" action="" class="row">
         <div class="col-11">
             <input type="text" placeholder="Поиск сотрудников" name="search" required
@@ -14,7 +15,6 @@
             <button type="submit" class="btn btn-primary">Искать</button>
         </div>
     </form>
-    <h1 class="mb-4">Сотрудники</h1>
     <a class="btn btn-success mb-2" href="{% url 'createEmployee' %}">Добавить сотрудника</a>
     {% if employees %}
         {% for el in employees %}
