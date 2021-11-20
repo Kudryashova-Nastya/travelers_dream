@@ -30,17 +30,19 @@ def clients(request):
 def employee(request, id):
     error = ''
     person = Employee.objects.get(id=id)
+    user = AuthUser.objects.get(id=person.user.id)
     if request.method == 'POST':
         form = EmployeeCreateForm(request.POST, instance=person)
         if form.is_valid():
-            form.save()
+            a = form.save(commit=False)
+            a.user = user
+            a.save()
             return redirect('employees')
         else:
             error = 'Форма заполнена некорректно'
 
     positions = PositionEmployee.objects.all()
     organizations = Organization.objects.all()
-    user = AuthUser.objects.get(id=person.user.id)
     return render(request, 'travelers_dream/employee.html', {'employee': person, 'positions': positions,
                                                              'organizations': organizations, 'user': user,
                                                              'error': error})
@@ -49,12 +51,11 @@ def employee(request, id):
 def create_employee(request):
     error = ''
     if request.method == 'POST':
-        # datetime.datetime.today
-        # last_id = int(AuthUser.objects.latest('id').id) - 1
-        # generate_username = 'user' + str(last_id)
+        last_id = AuthUser.objects.latest('id').id
+        generate_username = 'user' + str(last_id)
         form_user = UserCreateForm(
             {'password': 'pbkdf2_sha256$260000$PSBgh7lmKJVRrRhjCbLKOy$PU2iKYptNwdOEquhRHuK2qxq9GbPBrPn/8NHOed9Jxg=',
-             'last_login': str(datetime.datetime.now()), 'username': 'user211',
+             'last_login': str(datetime.datetime.now()), 'username': generate_username,
              'date_joined': str(datetime.datetime.now())})
         form = EmployeeCreateForm(request.POST)
 
