@@ -1,13 +1,13 @@
 import datetime
 
-from django.contrib.auth.forms import UserCreationForm
+# from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from .forms import UserRegistrationForm
+# from .forms import UserRegistrationForm
 
 from .models import Employee, Client, PositionEmployee, Organization, StatusClient, AuthUser
-from .forms import EmployeeCreateForm, ClientCreateForm, AuthUserForm, UserCreateForm
+from .forms import EmployeeCreateForm, ClientCreateForm, UserCreateForm, AuthUserForm
 
 
 # from django.http import HttpResponse
@@ -46,31 +46,32 @@ def employee(request, id):
                                                              'error': error})
 
 
-# def create_employee(request):
-#     error = ''
-#     if request.method == 'POST':
-#         # datetime.datetime.today
-#         # last_id = int(AuthUser.objects.latest('id').id) - 1
-#         # generate_username = 'user' + str(last_id)
-#         form_user = UserCreateForm(initial={'password': '12345',
-#                                             'last_login': '2021-11-13 22:11:18.629011', 'username': 'user211',
-#                                             'first_name': ' ', 'last_name': ' ',
-#                                             'email': ' ', 'date_joined': '2021-11-13 22:11:18.629011'})
-#         # if form_user.is_valid():
-#         form_user.save(commit=False)
-#         form = EmployeeCreateForm(initial={'user': 'user211'}, instance=request.POST)
-#         if form.is_valid():
-#             form.save(commit=False)
-#             return redirect('employees')
-#         else:
-#             error = 'Форма заполнена некорректно'
-#         # else:
-#         #     error = 'Проблема с созданием пользователя'
-#
-#     positions = PositionEmployee.objects.all()
-#     organizations = Organization.objects.all()
-#     return render(request, 'travelers_dream/create_employee.html', {'positions': positions,
-#                                                                     'organizations': organizations, 'error': error})
+def create_employee(request):
+    error = ''
+    if request.method == 'POST':
+        # datetime.datetime.today
+        # last_id = int(AuthUser.objects.latest('id').id) - 1
+        # generate_username = 'user' + str(last_id)
+        form_user = UserCreateForm(
+            {'password': 'pbkdf2_sha256$260000$PSBgh7lmKJVRrRhjCbLKOy$PU2iKYptNwdOEquhRHuK2qxq9GbPBrPn/8NHOed9Jxg=',
+             'last_login': str(datetime.datetime.now()), 'username': 'user211',
+             'date_joined': str(datetime.datetime.now())})
+        form = EmployeeCreateForm(request.POST)
+
+        if form_user.is_valid() and form.is_valid():
+            user_instance = form_user.save(commit=False)
+            form_user.save()
+            a = form.save(commit=False)
+            a.user = user_instance
+            a.save()
+            return redirect('employees')
+        else:
+            error = str(form_user.errors) + str(form.errors)
+
+    positions = PositionEmployee.objects.all()
+    organizations = Organization.objects.all()
+    return render(request, 'travelers_dream/create_employee.html', {'positions': positions,
+                                                                    'organizations': organizations, 'error': error})
 
 
 # def create_employee(request):
@@ -95,7 +96,7 @@ def employee(request, id):
 #                 error = 'Форма заполнена некорректно'
 #             return redirect('employees')
 #         else:
-#             error = 'Проблема с созданием пользователя'
+#             error = str(user_form.errors)
 #
 #     positions = PositionEmployee.objects.all()
 #     organizations = Organization.objects.all()
@@ -104,39 +105,39 @@ def employee(request, id):
 #
 
 
-def create_employee(request):
-    error = ''
-    if request.method == 'POST':
-        user_form = UserCreationForm({'username': 'user211', 'password': '12345', 'password2': '12345'})
-        if user_form.is_valid():
-            # Create a new user object but avoid saving it yet
-            new_user = user_form.save(commit=False)
-            # Set the chosen password
-            new_user.set_password(user_form.cleaned_data['password'])
-            # Save the User object
-            new_user.save()
-
-            form = EmployeeCreateForm(initial={'user': 'user211'}, instance=request.POST)
-            if form.is_valid():
-                form.save()
-                return redirect('employees')
-            else:
-                error = 'Форма заполнена некорректно'
-            return redirect('employees')
-        else:
-            print(user_form.errors)
-            # return {}
-
-            error = str(user_form.errors)
-            if error == '':
-                error = user_form.errors
-                if error == '':
-                    error = 'бядааааа'
-
-    positions = PositionEmployee.objects.all()
-    organizations = Organization.objects.all()
-    return render(request, 'travelers_dream/create_employee.html', {'positions': positions,
-                                                                    'organizations': organizations, 'error': error})
+# def create_employee(request):
+#     error = ''
+#     if request.method == 'POST':
+#         user_form = UserCreationForm({'username': 'user211', 'password': '12345', 'password2': '12345'})
+#         if user_form.is_valid():
+#             # Create a new user object but avoid saving it yet
+#             new_user = user_form.save(commit=False)
+#             # Set the chosen password
+#             new_user.set_password(user_form.cleaned_data['password'])
+#             # Save the User object
+#             new_user.save()
+#
+#             form = EmployeeCreateForm(initial={'user': 'user211'}, instance=request.POST)
+#             if form.is_valid():
+#                 form.save()
+#                 return redirect('employees')
+#             else:
+#                 error = 'Форма заполнена некорректно'
+#             return redirect('employees')
+#         else:
+#             print(user_form.errors)
+#             # return {}
+#
+#             error = str(user_form.errors)
+#             # if error == '':
+#             #     error = user_form.errors
+#             #     if error == '':
+#             #         error = 'бядааааа'
+#
+#     positions = PositionEmployee.objects.all()
+#     organizations = Organization.objects.all()
+#     return render(request, 'travelers_dream/create_employee.html', {'positions': positions,
+#                                                                     'organizations': organizations, 'error': error})
 
 
 def client(request, id):
