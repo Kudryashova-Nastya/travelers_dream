@@ -5,46 +5,48 @@
 {% endblock %}
 
 {% block content_admin %}
-    <a class="btn btn-outline-dark mb-2 btn-sm" href="{% url 'employees' %}">Назад</a>
-    <h1 class="mb-4">Добавление сотрудника</h1>
-    <div class="row">
-        <div class="col-6">
-        {% if error != '' %}
-        <div class="alert alert-dismissible alert-danger">
-            <strong>{{ error }}</strong>
-            {{ form.non_form_errors }}
-        </div>
-        {% endif %}
-            <form method="post">
-                {% csrf_token %}
-                <label for="initials"  class="form-label">Имя</label>
-                <input type="text" placeholder="Фамилия И.О." name="initials" id="initials" required class="mb-3 form-control"><br>
-                <label for="fio" class="form-label">ФИО</label>
-                <input type="text" placeholder="ФИО" name="fio" id="fio" required class="mb-3 form-control"><br>
-                <label for="dob" class="form-label">Дата рождения</label>
-                <input type="date" name="dob" id="dob" class="mb-3 form-control"><br>
-                <label for="photo" class="form-label">Фото</label>
-                <input type="text" placeholder="ссылка на фотографию" name="photo" id="photo" class="mb-3 form-control"><br>
-                <label for="position" class="form-label">Должность</label>
-                <select class="form-select mb-3" id="position" name="position">
-                    {% for el in positions %}
-                        {% if el.name != "Администратор" %}
+    {% if request.user.is_superuser %}
+        <a class="btn btn-outline-dark mb-2 btn-sm" href="{% url 'employees' %}">Назад</a>
+        <h1 class="mb-4">Добавление сотрудника</h1>
+        <div class="row">
+            <div class="col-6">
+            {% if error != '' %}
+            <div class="alert alert-dismissible alert-danger">
+                <strong>{{ error }}</strong>
+                {{ form.non_form_errors }}
+            </div>
+            {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <label for="initials"  class="form-label">Имя</label>
+                    <input type="text" placeholder="Фамилия И.О." name="initials" id="initials" required class="mb-3 form-control"><br>
+                    <label for="fio" class="form-label">ФИО</label>
+                    <input type="text" placeholder="ФИО" name="fio" id="fio" required class="mb-3 form-control"><br>
+                    <label for="dob" class="form-label">Дата рождения</label>
+                    <input type="date" name="dob" id="dob" class="mb-3 form-control"><br>
+                    <label for="photo" class="form-label">Фото</label>
+                    <input type="text" placeholder="ссылка на фотографию" name="photo" id="photo" class="mb-3 form-control"><br>
+                    <label for="position" class="form-label">Должность</label>
+                    <select class="form-select mb-3" id="position" name="position">
+                        {% for el in positions %}
+                            {% if el.name != "Администратор" %}
+                                <option value="{{ el.id }}">
+                                    {{ el.name }}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                <label for="organization" class="form-label">Филиал</label>
+                    <select class="form-select mb-3" id="organization" name="organization">
+                        {% for el in organizations %}
                             <option value="{{ el.id }}">
                                 {{ el.name }}
                             </option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-            <label for="organization" class="form-label">Филиал</label>
-                <select class="form-select mb-3" id="organization" name="organization">
-                    {% for el in organizations %}
-                        <option value="{{ el.id }}">
-                            {{ el.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <button type="submit" class="btn btn-success">Добавить</button>
-            </form>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-success">Добавить</button>
+                </form>
+            </div>
         </div>
-    </div>
+   {% endif %}
 {% endblock %}

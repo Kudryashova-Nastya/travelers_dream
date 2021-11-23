@@ -3,59 +3,60 @@
 {% block title %}
     Страница сотрудника
 {% endblock %}
-
 {% block content_admin %}
-    <a class="btn btn-outline-dark mb-2 btn-sm" href="{% url 'employees' %}">Назад</a>
-    <h1 class="mb-4">{{ employee.fio }}</h1>
-    <h5 class="mb-4">Логин в системе: {{ user.username }}</h5>
-    <div class="row">
-        <div class="col-6">
-        {% if error != '' %}
-        <div class="alert alert-dismissible alert-danger">
-            <strong>{{ error }}</strong>
-        </div>
-        {% endif %}
-            <form method="post">
-                {% csrf_token %}
-                <label for="initials"  class="form-label">Имя</label>
-                <input type="text" placeholder="Фамилия И.О." name="initials" id="initials" required
-                       class="mb-3 form-control" value="{{ employee.initials }}"><br>
-                <label for="fio" class="form-label">ФИО</label>
-                <input type="text" placeholder="ФИО" name="fio" id="fio" required class="mb-3 form-control"
-                       value="{{ employee.fio }}"><br>
-                <label for="dob" class="form-label">Дата рождения</label>
-                <input type="date" name="dob" id="dob" class="mb-3 form-control" value="{{ employee.dob|date:"Y-m-d" }}"><br>
-                <label for="photo" class="form-label">Фото</label>
-                <input type="text" placeholder="ссылка на фотографию" name="photo" id="photo" class="mb-3 form-control"
-                       {% if employee.photo %} value="{{ employee.photo }}" {% endif %}><br>
-                <label for="position" class="form-label">Должность</label>
-                <select class="form-select mb-3" id="position" name="position">
-                    {% for el in positions %}
-                        {% if el.name != "Администратор" %}
-                            <option value="{{ el.id }}" {% if employee.position == el %} selected {% endif %}>
-                                {{ el.name }}
-                            </option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-            <label for="organization" class="form-label">Филиал</label>
-                <select class="form-select mb-3" id="organization" name="organization">
-                    {% for el in organizations %}
-                            <option value="{{ el.id }}" {% if el == employee.organization %} selected {% endif %}>
-                                {{ el }}
-                            </option>
-                    {% endfor %}
-                </select>
-                <button type="submit" class="btn btn-success">Изменить</button>
-            </form>
-        </div>
-        <div class="col-6">
-            {% if employee.photo %}
-                <img src="{{ employee.photo }}" alt="фотография сотрудника" style="max-width: 100%;"><br>
-                <a href="{{ employee.photo }}" download="сотрудник" class="btn btn-success btn-sm mt-2">Скачать фотографию</a>
-            {% else %}
-                <p>У сотрудника нет фотографии</p>
+    {% if request.user.is_superuser %}
+        <a class="btn btn-outline-dark mb-2 btn-sm" href="{% url 'employees' %}">Назад</a>
+        <h1 class="mb-4">{{ employee.fio }}</h1>
+        <h5 class="mb-4">Логин в системе: {{ user.username }}</h5>
+        <div class="row">
+            <div class="col-6">
+            {% if error != '' %}
+            <div class="alert alert-dismissible alert-danger">
+                <strong>{{ error }}</strong>
+            </div>
             {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <label for="initials"  class="form-label">Имя</label>
+                    <input type="text" placeholder="Фамилия И.О." name="initials" id="initials" required
+                           class="mb-3 form-control" value="{{ employee.initials }}"><br>
+                    <label for="fio" class="form-label">ФИО</label>
+                    <input type="text" placeholder="ФИО" name="fio" id="fio" required class="mb-3 form-control"
+                           value="{{ employee.fio }}"><br>
+                    <label for="dob" class="form-label">Дата рождения</label>
+                    <input type="date" name="dob" id="dob" class="mb-3 form-control" value="{{ employee.dob|date:"Y-m-d" }}"><br>
+                    <label for="photo" class="form-label">Фото</label>
+                    <input type="text" placeholder="ссылка на фотографию" name="photo" id="photo" class="mb-3 form-control"
+                           {% if employee.photo %} value="{{ employee.photo }}" {% endif %}><br>
+                    <label for="position" class="form-label">Должность</label>
+                    <select class="form-select mb-3" id="position" name="position">
+                        {% for el in positions %}
+                            {% if el.name != "Администратор" %}
+                                <option value="{{ el.id }}" {% if employee.position == el %} selected {% endif %}>
+                                    {{ el.name }}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                <label for="organization" class="form-label">Филиал</label>
+                    <select class="form-select mb-3" id="organization" name="organization">
+                        {% for el in organizations %}
+                                <option value="{{ el.id }}" {% if el == employee.organization %} selected {% endif %}>
+                                    {{ el }}
+                                </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-success">Изменить</button>
+                </form>
+            </div>
+            <div class="col-6">
+                {% if employee.photo %}
+                    <img src="{{ employee.photo }}" alt="фотография сотрудника" style="max-width: 100%;"><br>
+                    <a href="{{ employee.photo }}" download="сотрудник" class="btn btn-success btn-sm mt-2">Скачать фотографию</a>
+                {% else %}
+                    <p>У сотрудника нет фотографии</p>
+                {% endif %}
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}

@@ -3,31 +3,32 @@
 {% block title %}
     Главная
 {% endblock %}
-
 {% block content_admin %}
-    <h1 class="mb-4">Сотрудники</h1>
-    <form method="get" action="" class="row">
-        <div class="col-11">
-            <input type="text" placeholder="Поиск сотрудников" name="search" required
-                           class="mb-3 form-control">
-        </div>
-        <div class="col-1">
-            <button type="submit" class="btn btn-primary">Искать</button>
-        </div>
-    </form>
-    <a class="btn btn-success mb-2" href="{% url 'createEmployee' %}">Добавить сотрудника</a>
-    {% if employees %}
-        {% for el in employees %}
-            <a href="/employee/{{ el.id }}" style="text-decoration: none">
-                <div class="alert alert-dismissible alert-light">
-                    <h5>{{ el.fio }}</h5>
-                <p>
-                    {{ el.position }}
-                </p>
-                </div>
-            </a>
-        {% endfor %}
-    {% else %}
-        <p>Нет ни одного сотрудника</p>
+    {% if request.user.is_superuser %}
+        <h1 class="mb-4">Сотрудники</h1>
+        <form method="get" action="" class="row">
+            <div class="col-11">
+                <input type="text" placeholder="Поиск сотрудников" name="search" required
+                               class="mb-3 form-control">
+            </div>
+            <div class="col-1">
+                <button type="submit" class="btn btn-primary">Искать</button>
+            </div>
+        </form>
+        <a class="btn btn-success mb-2" href="{% url 'createEmployee' %}">Добавить сотрудника</a>
+        {% if employees %}
+            {% for el in employees %}
+                <a href="/employee/{{ el.id }}" style="text-decoration: none">
+                    <div class="alert alert-dismissible alert-light">
+                        <h5>{{ el.fio }}</h5>
+                    <p>
+                        {{ el.position }}
+                    </p>
+                    </div>
+                </a>
+            {% endfor %}
+        {% else %}
+            <p>Нет ни одного сотрудника</p>
+        {% endif %}
     {% endif %}
 {% endblock %}
