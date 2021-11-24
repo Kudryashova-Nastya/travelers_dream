@@ -51,23 +51,28 @@ def employee(request, id):
 def create_employee(request):
     error = ''
     if request.method == 'POST':
-        last_id = AuthUser.objects.latest('id').id
-        generate_username = 'user' + str(last_id)
-        form_user = UserCreateForm(
-            {'password': 'pbkdf2_sha256$260000$PSBgh7lmKJVRrRhjCbLKOy$PU2iKYptNwdOEquhRHuK2qxq9GbPBrPn/8NHOed9Jxg=',
-             'last_login': str(datetime.datetime.now()), 'username': generate_username,
-             'date_joined': str(datetime.datetime.now())})
-        form = EmployeeCreateForm(request.POST)
+        check_unique = Employee.objects.filter(fio=request.POST['fio'], initials=request.POST['initials'],
+                                               dob=request.POST['dob'], position=request.POST['position']).exists()
+        if not check_unique:
+            last_id = AuthUser.objects.latest('id').id
+            generate_username = 'user' + str(last_id)
+            form_user = UserCreateForm(
+                {'password': 'pbkdf2_sha256$260000$PSBgh7lmKJVRrRhjCbLKOy$PU2iKYptNwdOEquhRHuK2qxq9GbPBrPn/8NHOed9Jxg=',
+                 'last_login': str(datetime.datetime.now()), 'username': generate_username,
+                 'date_joined': str(datetime.datetime.now())})
+            form = EmployeeCreateForm(request.POST)
 
-        if form_user.is_valid() and form.is_valid():
-            user_instance = form_user.save(commit=False)
-            form_user.save()
-            a = form.save(commit=False)
-            a.user = user_instance
-            a.save()
-            return redirect('employees')
+            if form_user.is_valid() and form.is_valid():
+                user_instance = form_user.save(commit=False)
+                form_user.save()
+                a = form.save(commit=False)
+                a.user = user_instance
+                a.save()
+                return redirect('employees')
+            else:
+                error = str(form_user.errors) + str(form.errors)
         else:
-            error = str(form_user.errors) + str(form.errors)
+            error = 'Сотрудник с такими же данными уже существует'
 
     positions = PositionEmployee.objects.all()
     organizations = Organization.objects.all()
