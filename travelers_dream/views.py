@@ -50,17 +50,25 @@ def employee(request, id):
 
 def create_employee(request):
     error = ''
+    double = ''
     if request.method == 'POST':
         check_unique = Employee.objects.filter(fio=request.POST['fio'], initials=request.POST['initials'],
                                                dob=request.POST['dob'], position=request.POST['position']).exists()
-        if not check_unique:
+        if check_unique:
+            double = Employee.objects.filter(fio=request.POST['fio'], initials=request.POST['initials'],
+                                             dob=request.POST['dob'], position=request.POST['position']).latest('id')
+
+        if not check_unique or 'double' in request.POST:
+            req = request.POST.copy()
+            if 'double' in request.POST:
+                req.pop('double')
             last_id = AuthUser.objects.latest('id').id
             generate_username = 'user' + str(last_id)
             form_user = UserCreateForm(
                 {'password': 'pbkdf2_sha256$260000$PSBgh7lmKJVRrRhjCbLKOy$PU2iKYptNwdOEquhRHuK2qxq9GbPBrPn/8NHOed9Jxg=',
                  'last_login': str(datetime.datetime.now()), 'username': generate_username,
                  'date_joined': str(datetime.datetime.now())})
-            form = EmployeeCreateForm(request.POST)
+            form = EmployeeCreateForm(req)
 
             if form_user.is_valid() and form.is_valid():
                 user_instance = form_user.save(commit=False)
@@ -72,78 +80,13 @@ def create_employee(request):
             else:
                 error = str(form_user.errors) + str(form.errors)
         else:
-            error = 'Сотрудник с такими же данными уже существует'
+            error = 'Сотрудник с такими же данными уже существует. Выберите филиал и повторите отправку данных, если всё же хотите внести его в базу'
 
     positions = PositionEmployee.objects.all()
     organizations = Organization.objects.all()
-    return render(request, 'travelers_dream/create_employee.html', {'positions': positions,
-                                                                    'organizations': organizations, 'error': error})
-
-
-# def create_employee(request):
-#     error = ''
-#     if request.method == 'POST':
-#         user_form = UserRegistrationForm(initial={'password': '12345', 'password2': '12345', 'username': 'user211',
-#                                                   'first_name': ' ',
-#                                                   'email': ' '})
-#         if user_form.is_valid():
-#             # Create a new user object but avoid saving it yet
-#             new_user = user_form.save(commit=False)
-#             # Set the chosen password
-#             new_user.set_password(user_form.cleaned_data['password'])
-#             # Save the User object
-#             new_user.save()
-#
-#             form = EmployeeCreateForm(initial={'user': 'user211'}, instance=request.POST)
-#             if form.is_valid():
-#                 form.save(commit=False)
-#                 return redirect('employees')
-#             else:
-#                 error = 'Форма заполнена некорректно'
-#             return redirect('employees')
-#         else:
-#             error = str(user_form.errors)
-#
-#     positions = PositionEmployee.objects.all()
-#     organizations = Organization.objects.all()
-#     return render(request, 'travelers_dream/create_employee.html', {'positions': positions,
-#                                                                     'organizations': organizations, 'error': error})
-#
-
-
-# def create_employee(request):
-#     error = ''
-#     if request.method == 'POST':
-#         user_form = UserCreationForm({'username': 'user211', 'password': '12345', 'password2': '12345'})
-#         if user_form.is_valid():
-#             # Create a new user object but avoid saving it yet
-#             new_user = user_form.save(commit=False)
-#             # Set the chosen password
-#             new_user.set_password(user_form.cleaned_data['password'])
-#             # Save the User object
-#             new_user.save()
-#
-#             form = EmployeeCreateForm(initial={'user': 'user211'}, instance=request.POST)
-#             if form.is_valid():
-#                 form.save()
-#                 return redirect('employees')
-#             else:
-#                 error = 'Форма заполнена некорректно'
-#             return redirect('employees')
-#         else:
-#             print(user_form.errors)
-#             # return {}
-#
-#             error = str(user_form.errors)
-#             # if error == '':
-#             #     error = user_form.errors
-#             #     if error == '':
-#             #         error = 'бядааааа'
-#
-#     positions = PositionEmployee.objects.all()
-#     organizations = Organization.objects.all()
-#     return render(request, 'travelers_dream/create_employee.html', {'positions': positions,
-#                                                                     'organizations': organizations, 'error': error})
+    return render(request, 'travelers_dream/create_employee.html',
+                  {'positions': positions, 'organizations': organizations,
+                   'error': error, 'init': double})
 
 
 def client(request, id):

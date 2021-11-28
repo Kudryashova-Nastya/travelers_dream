@@ -19,24 +19,24 @@
                 <form method="post">
                     {% csrf_token %}
                     <label for="initials"  class="form-label">Имя</label>
-                    <input type="text" placeholder="Фамилия И.О." name="initials" id="initials" required class="mb-3 form-control"><br>
+                    <input type="text" placeholder="Фамилия И.О." name="initials" id="initials" value="{{ init.initials }}" required class="mb-3 form-control"><br>
                     <label for="fio" class="form-label">ФИО</label>
-                    <input type="text" placeholder="ФИО" name="fio" id="fio" required class="mb-3 form-control"><br>
+                    <input type="text" placeholder="ФИО" name="fio" id="fio" value="{{ init.fio }}" required class="mb-3 form-control"><br>
                     <label for="dob" class="form-label">Дата рождения</label>
-                    <input type="date" name="dob" id="dob" class="mb-3 form-control"><br>
+                    <input type="date" name="dob" id="dob" value="{{ init.dob|date:"Y-m-d" }}" class="mb-3 form-control"><br>
                     <label for="photo" class="form-label">Фото</label>
                     <input type="text" placeholder="ссылка на фотографию" name="photo" id="photo" class="mb-3 form-control"><br>
                     <label for="position" class="form-label">Должность</label>
                     <select class="form-select mb-3" id="position" name="position">
                         {% for el in positions %}
                             {% if el.name != "Администратор" %}
-                                <option value="{{ el.id }}">
+                                <option {% if el == init.position %} selected {% endif %} value="{{ el.id }}">
                                     {{ el.name }}
                                 </option>
                             {% endif %}
                         {% endfor %}
                     </select>
-                <label for="organization" class="form-label">Филиал</label>
+                    <label for="organization" class="form-label">Филиал</label>
                     <select class="form-select mb-3" id="organization" name="organization">
                         {% for el in organizations %}
                             <option value="{{ el.id }}">
@@ -44,6 +44,9 @@
                             </option>
                         {% endfor %}
                     </select>
+                    {% if error == 'Сотрудник с такими же данными уже существует. Выберите филиал и повторите отправку данных, если всё же хотите внести его в базу' %}
+                        <input type="hidden" name="double" value="no">
+                    {% endif %}
                     <button type="submit" class="btn btn-success">Добавить</button>
                 </form>
             </div>
