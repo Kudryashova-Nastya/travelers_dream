@@ -2,6 +2,7 @@ import datetime
 
 # from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
+from django.db import transaction
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 # from .forms import UserRegistrationForm
@@ -32,11 +33,12 @@ def employee(request, id):
     person = Employee.objects.get(id=id)
     user = AuthUser.objects.get(id=person.user.id)
     if request.method == 'POST':
-        form = EmployeeCreateForm(request.POST, instance=person)
-        if form.is_valid():
-            a = form.save(commit=False)
-            a.user = user
-            a.save()
+        form_employee = EmployeeCreateForm(request.POST, instance=person)
+        if form_employee.is_valid():
+            with transaction.atomic():
+                employee_instance = form_employee.save(commit=False)
+                employee_instance.user = user
+                employee_instance.save()
             return redirect('employees')
         else:
             error = 'Форма заполнена некорректно'
@@ -68,17 +70,18 @@ def create_employee(request):
                 {'password': 'pbkdf2_sha256$260000$PSBgh7lmKJVRrRhjCbLKOy$PU2iKYptNwdOEquhRHuK2qxq9GbPBrPn/8NHOed9Jxg=',
                  'last_login': str(datetime.datetime.now()), 'username': generate_username,
                  'date_joined': str(datetime.datetime.now())})
-            form = EmployeeCreateForm(req)
+            form_employee = EmployeeCreateForm(req)
 
-            if form_user.is_valid() and form.is_valid():
-                user_instance = form_user.save(commit=False)
-                form_user.save()
-                a = form.save(commit=False)
-                a.user = user_instance
-                a.save()
+            if form_user.is_valid() and form_employee.is_valid():
+                with transaction.atomic():
+                    user_instance = form_user.save(commit=False)
+                    form_user.save()
+                    employee_instance = form_employee.save(commit=False)
+                    employee_instance.user = user_instance
+                    employee_instance.save()
                 return redirect('employees')
             else:
-                error = str(form_user.errors) + str(form.errors)
+                error = str(form_user.errors) + str(form_employee.errors)
         else:
             error = 'Сотрудник с такими же данными уже существует. Выберите филиал и повторите отправку данных, если всё же хотите внести его в базу'
 
