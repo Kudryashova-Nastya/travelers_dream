@@ -30,6 +30,7 @@ def clients(request):
 
 def employee(request, id):
     error = ''
+    employee = Employee.objects.get(id=id)
     if request.method == 'POST':
         form_employee = EmployeeCreateForm(request.POST, instance=employee)
         if form_employee.is_valid():
@@ -42,7 +43,6 @@ def employee(request, id):
             return redirect('employees')
         else:
             error = 'Форма заполнена некорректно'
-    employee = Employee.objects.get(id=id)
     user = AuthUser.objects.get(id=employee.user.id)
     positions = PositionEmployee.objects.all()
     organizations = Organization.objects.all()
