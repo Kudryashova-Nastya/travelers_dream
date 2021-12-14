@@ -30,22 +30,23 @@ def clients(request):
 
 def employee(request, id):
     error = ''
-    person = Employee.objects.get(id=id)
-    user = AuthUser.objects.get(id=person.user.id)
     if request.method == 'POST':
-        form_employee = EmployeeCreateForm(request.POST, instance=person)
+        form_employee = EmployeeCreateForm(request.POST, instance=employee)
         if form_employee.is_valid():
             with transaction.atomic():
+                person = Employee.objects.get(id=id)
+                user = AuthUser.objects.get(id=person.user.id)
                 employee_instance = form_employee.save(commit=False)
                 employee_instance.user = user
                 employee_instance.save()
             return redirect('employees')
         else:
             error = 'Форма заполнена некорректно'
-
+    employee = Employee.objects.get(id=id)
+    user = AuthUser.objects.get(id=employee.user.id)
     positions = PositionEmployee.objects.all()
     organizations = Organization.objects.all()
-    return render(request, 'travelers_dream/employee.html', {'employee': person, 'positions': positions,
+    return render(request, 'travelers_dream/employee.html', {'employee': employee, 'positions': positions,
                                                              'organizations': organizations, 'user': user,
                                                              'error': error})
 
@@ -88,8 +89,7 @@ def create_employee(request):
     positions = PositionEmployee.objects.all()
     organizations = Organization.objects.all()
     return render(request, 'travelers_dream/create_employee.html',
-                  {'positions': positions, 'organizations': organizations,
-                   'error': error, 'init': double})
+                  {'positions': positions, 'organizations': organizations, 'error': error, 'init': double})
 
 
 def client(request, id):
