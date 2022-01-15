@@ -84,6 +84,9 @@ DATABASES = {
         'PORT': '3306',
         'USER': 'std_953_travelers_dream',
         'PASSWORD': 'vnukovo41',
+        # 'OPTIONS': {
+        #             'isolation_level': "read committed"
+        #         },
     }
 }
 

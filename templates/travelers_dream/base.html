@@ -25,12 +25,14 @@
                     <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'clients' %}">Клиенты</a>
                     <a class="me-3 py-2 text-dark text-decoration-none" href="#">Соглашения</a>
                     <a class="me-3 py-2 text-dark text-decoration-none" href="#">Договоры</a>
-                {% elif employee_now.position.name != 'Бухгалтер'%}
-                    <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'clients' %}">Клиенты</a>
-                    <a class="me-3 py-2 text-dark text-decoration-none" href="#">Соглашения</a>
-                    <a class="me-3 py-2 text-dark text-decoration-none" href="#">Договоры</a>
-                {% else %}
-                    <a class="me-3 py-2 text-dark text-decoration-none" href="#">Оплаты</a>
+                {% elif request.user.is_staff %}
+                    {% if  employee_now.position.name != 'Бухгалтер'%}
+                        <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'clients' %}">Клиенты</a>
+                        <a class="me-3 py-2 text-dark text-decoration-none" href="#">Соглашения</a>
+                        <a class="me-3 py-2 text-dark text-decoration-none" href="#">Договоры</a>
+                    {% else %}
+                        <a class="me-3 py-2 text-dark text-decoration-none" href="#">Оплаты</a>
+                    {% endif %}
                 {% endif %}
                 {% if request.user.is_authenticated %}
                     <a class="btn btn-outline-primary" href="{% url 'logout' %}">Выйти</a>

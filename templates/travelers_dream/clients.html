@@ -4,7 +4,7 @@
     Клиенты
 {% endblock %}
 {% block content_admin %}
-    {% if employee_now.position.name != 'Бухгалтер' %}
+    {% if employee_now.position.name != 'Бухгалтер' and request.user.is_staff%}
         <h1 class="mb-4">Клиенты</h1>
         <a class="btn btn-success mb-2" href="{% url 'createClient' %}">Добавить клиента</a>
         {% if clients %}
