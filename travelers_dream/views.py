@@ -7,8 +7,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 # from .forms import UserRegistrationForm
 
-from .models import Employee, Client, PositionEmployee, Organization, StatusClient, AuthUser
-from .forms import EmployeeCreateForm, ClientCreateForm, UserCreateForm, AuthUserForm
+from .models import Employee, Client, PositionEmployee, Organization, StatusClient, AuthUser, Activity
+from .forms import EmployeeCreateForm, ClientCreateForm, UserCreateForm, AuthUserForm, UserActivityForm
 
 
 # from django.http import HttpResponse
@@ -46,9 +46,11 @@ def employee(request, id):
     user = AuthUser.objects.get(id=employee.user.id)
     positions = PositionEmployee.objects.all()
     organizations = Organization.objects.all()
+    # кол-во активностей за день
+    activities = Activity.objects.filter(user_id=employee.id, date=str(datetime.datetime.now().date())).count()
     return render(request, 'travelers_dream/employee.html', {'employee': employee, 'positions': positions,
                                                              'organizations': organizations, 'user': user,
-                                                             'error': error})
+                                                             'activities': activities, 'error': error})
 
 
 def create_employee(request):
@@ -97,8 +99,21 @@ def client(request, id):
     person = Client.objects.get(id=id)
     if request.method == 'POST':
         form = ClientCreateForm(request.POST, instance=person)
-        if form.is_valid():
+
+        # добавление активности пользователя
+        employee = Employee.objects.get(user=request.user.id)
+        if 6 <= datetime.datetime.now().hour < 18:
+            form_activity = UserActivityForm(
+                {'user_id': employee.id, 'date': str(datetime.datetime.now().date()), 'time': str(datetime.datetime.now().time()),
+                 'day_activity': True, 'night_activity': False})
+        else:
+            form_activity = UserActivityForm(
+                {'user_id': employee.id, 'date': str(datetime.datetime.now().date()), 'time': str(datetime.datetime.now().time()),
+                 'day_activity': False, 'night_activity': True})
+
+        if form.is_valid() and form_activity.is_valid():
             form.save()
+            form_activity.save()
             return redirect('clients')
         else:
             error = 'Форма заполнена некорректно'

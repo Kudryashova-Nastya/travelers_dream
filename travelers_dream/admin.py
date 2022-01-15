@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Agreement, City, Client, Contract, Currency, Employee, Hotel, InternationalPassport, Organization
+from .models import Agreement, City, Client, Contract, Currency, Employee, Hotel, InternationalPassport, Organization, \
+    Activity
 from .models import Payment, PositionEmployee, Reservation, RoomType, StatusClient, Ticket, TransportType
 
 
@@ -22,6 +23,9 @@ class ReservationAdmin(admin.ModelAdmin):
 class TicketAdmin(admin.ModelAdmin):
     list_display = ('transport', 'contract', 'transfer')
 
+class ActivityAdmin(admin.ModelAdmin):
+    list_display = ('user_id', 'date', 'time', 'day_activity', 'night_activity')
+
 
 admin.site.register(Agreement, AgreementAdmin)
 admin.site.register(City)
@@ -39,3 +43,4 @@ admin.site.register(RoomType)
 admin.site.register(StatusClient)
 admin.site.register(Ticket, TicketAdmin)
 admin.site.register(TransportType)
+admin.site.register(Activity)

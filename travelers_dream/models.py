@@ -18,7 +18,7 @@ class Agreement(models.Model):
         db_table = 'agreement'
 
     def __str__(self):
-        return self.id
+        return self.id.__str__()
 
 
 class AuthGroup(models.Model):
@@ -142,7 +142,7 @@ class Contract(models.Model):
         db_table = 'contract'
 
     def __str__(self):
-        return self.id
+        return self.id.__str__()
 
 
 class Currency(models.Model):
@@ -213,7 +213,7 @@ class Employee(models.Model):
     user = models.OneToOneField(AuthUser, models.CASCADE, db_column='user', blank=True, null=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'employee'
 
     def __str__(self):
@@ -276,7 +276,7 @@ class Payment(models.Model):
         db_table = 'payment'
 
     def __str__(self):
-        return self.id
+        return self.id.__str__()
 
 
 class PositionEmployee(models.Model):
@@ -305,7 +305,7 @@ class Reservation(models.Model):
         db_table = 'reservation'
 
     def __str__(self):
-        return self.hotel
+        return self.hotel.__str__()
 
 
 class RoomType(models.Model):
@@ -342,7 +342,7 @@ class Ticket(models.Model):
         db_table = 'ticket'
 
     def __str__(self):
-        return self.id
+        return self.id.__str__()
 
 
 class TransportType(models.Model):
@@ -354,3 +354,16 @@ class TransportType(models.Model):
 
     def __str__(self):
         return self.name
+
+class Activity(models.Model):
+    user_id = models.IntegerField()
+    date = models.DateField()
+    time = models.TimeField(blank=True, null=True)
+    day_activity = models.BooleanField(default=False)
+    night_activity = models.BooleanField(default=False)
+
+    class Meta:
+        managed = True
+
+    def __str__(self):
+        return self.user_id.__str__()
