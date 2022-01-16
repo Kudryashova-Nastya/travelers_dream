@@ -123,13 +123,29 @@ def client(request, id):
 
 def create_client(request):
     error = ''
+    # добавление активности пользователя
+    employee = Employee.objects.get(user=request.user.id)
+    if 6 <= datetime.datetime.now().hour < 18:
+        form_activity = UserActivityForm(
+            {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+             'time': str(datetime.datetime.now().time()),
+             'day_activity': True, 'night_activity': False})
+    else:
+        form_activity = UserActivityForm(
+            {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+             'time': str(datetime.datetime.now().time()),
+             'day_activity': False, 'night_activity': True})
+
     if request.method == 'POST':
         form = ClientCreateForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and form_activity.is_valid():
             form.save()
+            form_activity.save()
             return redirect('clients')
         else:
             error = 'Форма заполнена некорректно'
+
+
 
     statuses = StatusClient.objects.all()
     return render(request, 'travelers_dream/create_client.html', {'statuses': statuses, 'error': error})
