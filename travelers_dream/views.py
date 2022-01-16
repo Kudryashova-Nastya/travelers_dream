@@ -7,8 +7,9 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 # from .forms import UserRegistrationForm
 
-from .models import Employee, Client, PositionEmployee, Organization, StatusClient, AuthUser, Activity
-from .forms import EmployeeCreateForm, ClientCreateForm, UserCreateForm, AuthUserForm, UserActivityForm
+from .models import Employee, Client, PositionEmployee, Organization, StatusClient, AuthUser, Activity, Agreement
+from .forms import EmployeeCreateForm, ClientCreateForm, UserCreateForm, AuthUserForm, UserActivityForm, \
+    AgreementCreateForm
 
 
 # from django.http import HttpResponse
@@ -165,6 +166,40 @@ def create_client(request):
 
     statuses = StatusClient.objects.all()
     return render(request, 'travelers_dream/create_client.html', {'statuses': statuses, 'error': error})
+
+
+def agreements(request):
+    agreements = Agreement.objects.all()
+    return render(request, 'travelers_dream/agreements.html', {'agreements': agreements})
+
+def agreement(request, id):
+    error = ''
+    agreement = Agreement.objects.get(id=id)
+    if request.method == 'POST':
+        form = AgreementCreateForm(request.POST, instance=agreement)
+        if form.is_valid():
+            form.save()
+            return redirect('agreements')
+        else:
+            error = 'Форма заполнена некорректно'
+    organizations = Organization.objects.all()
+    return render(request, 'travelers_dream/agreement.html', {'agreement': agreement, 'error': error,
+                                                              'organizations': organizations})
+
+def create_agreement(request):
+    error = ''
+    if request.method == 'POST':
+        form = AgreementCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('contractCreate')
+        else:
+            error = 'Форма заполнена некорректно'
+
+    organizations = Organization.objects.all()
+    agent = Employee.objects.all()
+    client = Client.objects.all()
+    return render(request, 'travelers_dream/create_agreement.html', {'error': error, 'organizations' : organizations, 'agent' : agent, 'client' : client})
 
 
 class Login(LoginView):

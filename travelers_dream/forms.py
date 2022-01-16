@@ -2,7 +2,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from .models import Employee, Client, AuthUser, Activity
+from .models import Employee, Client, AuthUser, Activity, Agreement
 from django.forms import ModelForm, forms, CharField, PasswordInput, TextInput
 
 
@@ -30,11 +30,17 @@ class UserCreateForm(ModelForm):
         model = AuthUser
         fields = ['password', 'last_login', 'username', 'date_joined']
 
+
 class UserActivityForm(ModelForm):
     class Meta:
         model = Activity
         fields = ['user_id', 'date', 'time', 'day_activity', 'night_activity']
 
+
+class AgreementCreateForm(ModelForm):
+    class Meta:
+        model = Agreement
+        fields = ['date', 'organization','agent', 'client', 'country',  'number_participants', 'date_start', 'date_end', 'cities']
 
 # class UserRegistrationForm(ModelForm):
 #     username = CharField(label='Username', widget=TextInput)

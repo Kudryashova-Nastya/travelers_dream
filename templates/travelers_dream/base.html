@@ -23,12 +23,12 @@
                 {% if request.user.is_superuser %}
                     <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'employees' %}">Сотрудники</a>
                     <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'clients' %}">Клиенты</a>
-                    <a class="me-3 py-2 text-dark text-decoration-none" href="#">Соглашения</a>
+                    <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'agreements' %}">Соглашения</a>
                     <a class="me-3 py-2 text-dark text-decoration-none" href="#">Договоры</a>
                 {% elif request.user.is_staff %}
                     {% if  employee_now.position.name != 'Бухгалтер'%}
                         <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'clients' %}">Клиенты</a>
-                        <a class="me-3 py-2 text-dark text-decoration-none" href="#">Соглашения</a>
+                        <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'agreements' %}">Соглашения</a>
                         <a class="me-3 py-2 text-dark text-decoration-none" href="#">Договоры</a>
                     {% else %}
                         <a class="me-3 py-2 text-dark text-decoration-none" href="#">Оплаты</a>
