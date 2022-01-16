@@ -8,6 +8,7 @@
         <a class="btn btn-outline-dark mb-2 btn-sm" href="{% url 'employees' %}">Назад</a>
         <h1 class="mb-4">{{ employee.fio }}</h1>
         <h5 class="mb-4">Логин в системе: {{ user.username }}</h5>
+        <h5 class="mb-4">Статус: {{ status }} (активностей в дневное время - {{ daytime }}, в вечернее - {{ nighttime }})</h5>
         <h5 class="mb-4">Активностей за сегодня: {{ activities }}</h5>
         <div class="row">
             <div class="col-6">

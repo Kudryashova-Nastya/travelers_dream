@@ -48,9 +48,25 @@ def employee(request, id):
     organizations = Organization.objects.all()
     # кол-во активностей за день
     activities = Activity.objects.filter(user_id=employee.id, date=str(datetime.datetime.now().date())).count()
+
+    # статус пользователя (сова или жаворонок) определяется в зависимости от того, в какое время был наиболее активен пользователь за текущий месяц
+    month_activities_daytime = Activity.objects.filter(user_id=employee.id, day_activity=True,
+                                                       date__contains='-'+str(datetime.datetime.now().date().strftime('%m'))+'-').count()
+    month_activities_nighttime = Activity.objects.filter(user_id=employee.id, night_activity=True,
+                                                         date__contains='-' + str(datetime.datetime.now().date().strftime('%m')) + '-').count()
+    if month_activities_daytime > month_activities_nighttime:
+        status = 'жаворонок'
+    elif month_activities_daytime < month_activities_nighttime:
+        status = 'сова'
+    else:
+        status = 'не определился'
+
+
     return render(request, 'travelers_dream/employee.html', {'employee': employee, 'positions': positions,
                                                              'organizations': organizations, 'user': user,
-                                                             'activities': activities, 'error': error})
+                                                             'activities': activities, 'status': status,
+                                                             'daytime': month_activities_daytime, 'error': error,
+                                                             'nighttime': month_activities_nighttime})
 
 
 def create_employee(request):
