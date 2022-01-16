@@ -52,16 +52,18 @@ def employee(request, id):
 
     # статус пользователя (сова или жаворонок) определяется в зависимости от того, в какое время был наиболее активен пользователь за текущий месяц
     month_activities_daytime = Activity.objects.filter(user_id=employee.id, day_activity=True,
-                                                       date__contains='-'+str(datetime.datetime.now().date().strftime('%m'))+'-').count()
+                                                       date__contains='-' + str(
+                                                           datetime.datetime.now().date().strftime('%m')) + '-').count()
     month_activities_nighttime = Activity.objects.filter(user_id=employee.id, night_activity=True,
-                                                         date__contains='-' + str(datetime.datetime.now().date().strftime('%m')) + '-').count()
+                                                         date__contains='-' + str(
+                                                             datetime.datetime.now().date().strftime(
+                                                                 '%m')) + '-').count()
     if month_activities_daytime > month_activities_nighttime:
         status = 'жаворонок'
     elif month_activities_daytime < month_activities_nighttime:
         status = 'сова'
     else:
         status = 'не определился'
-
 
     return render(request, 'travelers_dream/employee.html', {'employee': employee, 'positions': positions,
                                                              'organizations': organizations, 'user': user,
@@ -115,22 +117,29 @@ def client(request, id):
     error = ''
     person = Client.objects.get(id=id)
     if request.method == 'POST':
-        form = ClientCreateForm(request.POST, instance=person)
-
         # добавление активности пользователя
-        employee = Employee.objects.get(user=request.user.id)
-        if 6 <= datetime.datetime.now().hour < 18:
-            form_activity = UserActivityForm(
-                {'user_id': employee.id, 'date': str(datetime.datetime.now().date()), 'time': str(datetime.datetime.now().time()),
-                 'day_activity': True, 'night_activity': False})
-        else:
-            form_activity = UserActivityForm(
-                {'user_id': employee.id, 'date': str(datetime.datetime.now().date()), 'time': str(datetime.datetime.now().time()),
-                 'day_activity': False, 'night_activity': True})
+        try:
+            employee = Employee.objects.get(user=request.user.id)
+        except Employee.DoesNotExist:
+            employee = None
 
-        if form.is_valid() and form_activity.is_valid():
+        if employee is not None:
+            if 6 <= datetime.datetime.now().hour < 18:
+                form_activity = UserActivityForm(
+                    {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': True, 'night_activity': False})
+            else:
+                form_activity = UserActivityForm(
+                    {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': False, 'night_activity': True})
+            if form_activity.is_valid():
+                form_activity.save()
+
+        form = ClientCreateForm(request.POST, instance=person)
+        if form.is_valid():
             form.save()
-            form_activity.save()
             return redirect('clients')
         else:
             error = 'Форма заполнена некорректно'
@@ -140,29 +149,33 @@ def client(request, id):
 
 def create_client(request):
     error = ''
-    # добавление активности пользователя
-    employee = Employee.objects.get(user=request.user.id)
-    if 6 <= datetime.datetime.now().hour < 18:
-        form_activity = UserActivityForm(
-            {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
-             'time': str(datetime.datetime.now().time()),
-             'day_activity': True, 'night_activity': False})
-    else:
-        form_activity = UserActivityForm(
-            {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
-             'time': str(datetime.datetime.now().time()),
-             'day_activity': False, 'night_activity': True})
-
     if request.method == 'POST':
+        # добавление активности пользователя
+        try:
+            employee = Employee.objects.get(user=request.user.id)
+        except Employee.DoesNotExist:
+            employee = None
+
+        if employee is not None:
+            if 6 <= datetime.datetime.now().hour < 18:
+                form_activity = UserActivityForm(
+                    {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': True, 'night_activity': False})
+            else:
+                form_activity = UserActivityForm(
+                    {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': False, 'night_activity': True})
+            if form_activity.is_valid():
+                form_activity.save()
+
         form = ClientCreateForm(request.POST)
-        if form.is_valid() and form_activity.is_valid():
+        if form.is_valid():
             form.save()
-            form_activity.save()
             return redirect('clients')
         else:
             error = 'Форма заполнена некорректно'
-
-
 
     statuses = StatusClient.objects.all()
     return render(request, 'travelers_dream/create_client.html', {'statuses': statuses, 'error': error})
@@ -172,23 +185,66 @@ def agreements(request):
     agreements = Agreement.objects.all()
     return render(request, 'travelers_dream/agreements.html', {'agreements': agreements})
 
+
 def agreement(request, id):
     error = ''
     agreement = Agreement.objects.get(id=id)
     if request.method == 'POST':
-        form = AgreementCreateForm(request.POST, instance=agreement)
-        if form.is_valid():
-            form.save()
-            return redirect('agreements')
-        else:
-            error = 'Форма заполнена некорректно'
+        # добавление активности пользователя
+        try:
+            employee = Employee.objects.get(user=request.user.id)
+        except Employee.DoesNotExist:
+            employee = None
+
+        if employee is not None:
+            if 6 <= datetime.datetime.now().hour < 18:
+                form_activity = UserActivityForm(
+                    {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': True, 'night_activity': False})
+            else:
+                form_activity = UserActivityForm(
+                    {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': False, 'night_activity': True})
+            if form_activity.is_valid():
+                form_activity.save()
+
+    form = AgreementCreateForm(request.POST, instance=agreement)
+    if form.is_valid():
+        form.save()
+        return redirect('agreements')
+    else:
+        error = 'Форма заполнена некорректно'
+
     organizations = Organization.objects.all()
     return render(request, 'travelers_dream/agreement.html', {'agreement': agreement, 'error': error,
                                                               'organizations': organizations})
 
+
 def create_agreement(request):
     error = ''
     if request.method == 'POST':
+        # добавление активности пользователя
+        try:
+            employee = Employee.objects.get(user=request.user.id)
+        except Employee.DoesNotExist:
+            employee = None
+
+        if employee is not None:
+            if 6 <= datetime.datetime.now().hour < 18:
+                form_activity = UserActivityForm(
+                    {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': True, 'night_activity': False})
+            else:
+                form_activity = UserActivityForm(
+                    {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': False, 'night_activity': True})
+            if form_activity.is_valid():
+                form_activity.save()
+
         form = AgreementCreateForm(request.POST)
         if form.is_valid():
             form.save()
@@ -199,7 +255,8 @@ def create_agreement(request):
     organizations = Organization.objects.all()
     agent = Employee.objects.all()
     client = Client.objects.all()
-    return render(request, 'travelers_dream/create_agreement.html', {'error': error, 'organizations' : organizations, 'agent' : agent, 'client' : client})
+    return render(request, 'travelers_dream/create_agreement.html',
+                  {'error': error, 'organizations': organizations, 'agent': agent, 'client': client})
 
 
 class Login(LoginView):
