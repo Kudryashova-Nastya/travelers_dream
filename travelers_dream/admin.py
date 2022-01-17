@@ -6,7 +6,7 @@ from .models import Payment, PositionEmployee, Reservation, RoomType, StatusClie
 
 
 class AgreementAdmin(admin.ModelAdmin):
-    list_display = ('date', 'agent', 'client', 'country')
+    list_display = ('date', 'agent', 'client', 'city')
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('fio', 'gender', 'dob')

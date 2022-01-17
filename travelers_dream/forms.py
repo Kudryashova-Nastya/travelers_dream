@@ -40,7 +40,8 @@ class UserActivityForm(ModelForm):
 class AgreementCreateForm(ModelForm):
     class Meta:
         model = Agreement
-        fields = ['date', 'organization','agent', 'client', 'country',  'number_participants', 'date_start', 'date_end', 'cities']
+        fields = ['date', 'organization', 'agent', 'client', 'number_participants', 'date_start',
+                  'date_end', 'city']
 
 # class UserRegistrationForm(ModelForm):
 #     username = CharField(label='Username', widget=TextInput)

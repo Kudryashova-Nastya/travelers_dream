@@ -3,22 +3,21 @@ from django.db import models
 
 
 class Agreement(models.Model):
-    date = models.DateField()
+    date = models.DateField(blank=True, null=True)
     organization = models.ForeignKey('Organization', models.DO_NOTHING, db_column='organization')
-    country = models.CharField(max_length=64)
-    agent = models.ForeignKey('Employee', models.DO_NOTHING, blank=True, null=True)
+    agent = models.ForeignKey('Employee', models.DO_NOTHING)
     client = models.ForeignKey('Client', models.DO_NOTHING)
     number_participants = models.IntegerField()
     date_start = models.DateField()
     date_end = models.DateField()
-    cities = models.TextField(db_collation='utf8mb4_bin')
+    city = models.ForeignKey('City', models.DO_NOTHING, db_column='city')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'agreement'
 
     def __str__(self):
-        return self.id.__str__()
+        return str(self.id)
 
 
 class AuthGroup(models.Model):
@@ -142,7 +141,7 @@ class Contract(models.Model):
         db_table = 'contract'
 
     def __str__(self):
-        return self.id.__str__()
+        return str(self.id)
 
 
 class Currency(models.Model):
@@ -276,7 +275,7 @@ class Payment(models.Model):
         db_table = 'payment'
 
     def __str__(self):
-        return self.id.__str__()
+        return str(self.id)
 
 
 class PositionEmployee(models.Model):
@@ -305,7 +304,7 @@ class Reservation(models.Model):
         db_table = 'reservation'
 
     def __str__(self):
-        return self.hotel.__str__()
+        return str(self.id)
 
 
 class RoomType(models.Model):
@@ -342,7 +341,7 @@ class Ticket(models.Model):
         db_table = 'ticket'
 
     def __str__(self):
-        return self.id.__str__()
+        return str(self.id)
 
 
 class TransportType(models.Model):
@@ -366,4 +365,4 @@ class Activity(models.Model):
         managed = True
 
     def __str__(self):
-        return self.user_id.__str__()
+        return str(self.user_id)

@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 # from .forms import UserRegistrationForm
 
-from .models import Employee, Client, PositionEmployee, Organization, StatusClient, AuthUser, Activity, Agreement
+from .models import Employee, Client, PositionEmployee, Organization, StatusClient, AuthUser, Activity, Agreement, City
 from .forms import EmployeeCreateForm, ClientCreateForm, UserCreateForm, AuthUserForm, UserActivityForm, \
     AgreementCreateForm
 
@@ -47,6 +47,7 @@ def employee(request, id):
     user = AuthUser.objects.get(id=employee.user.id)
     positions = PositionEmployee.objects.all()
     organizations = Organization.objects.all()
+
     # кол-во активностей за день
     activities = Activity.objects.filter(user_id=employee.id, date=str(datetime.datetime.now().date())).count()
 
@@ -210,16 +211,20 @@ def agreement(request, id):
             if form_activity.is_valid():
                 form_activity.save()
 
-    form = AgreementCreateForm(request.POST, instance=agreement)
-    if form.is_valid():
-        form.save()
-        return redirect('agreements')
-    else:
-        error = 'Форма заполнена некорректно'
+        form = AgreementCreateForm(request.POST, instance=agreement)
+        if form.is_valid():
+            form.save()
+            return redirect('agreements')
+        else:
+            error = 'Форма заполнена некорректно'
 
     organizations = Organization.objects.all()
-    return render(request, 'travelers_dream/agreement.html', {'agreement': agreement, 'error': error,
-                                                              'organizations': organizations})
+    agent = Employee.objects.all()
+    client = Client.objects.all()
+    city = City.objects.all()
+    return render(request, 'travelers_dream/agreement.html',
+                  {'agreement': agreement, 'error': error, 'organizations': organizations, 'agent': agent,
+                   'client': client, 'city': city})
 
 
 def create_agreement(request):
@@ -247,16 +252,19 @@ def create_agreement(request):
 
         form = AgreementCreateForm(request.POST)
         if form.is_valid():
-            form.save()
+            form_instance = form.save(commit=False)
+            form_instance.date = datetime.datetime.now().date()
+            form_instance.save()
             return redirect('contractCreate')
         else:
-            error = 'Форма заполнена некорректно'
+            error = str(form.errors)
 
     organizations = Organization.objects.all()
     agent = Employee.objects.all()
     client = Client.objects.all()
+    city = City.objects.all()
     return render(request, 'travelers_dream/create_agreement.html',
-                  {'error': error, 'organizations': organizations, 'agent': agent, 'client': client})
+                  {'error': error, 'organizations': organizations, 'agent': agent, 'client': client, 'city': city})
 
 
 class Login(LoginView):
