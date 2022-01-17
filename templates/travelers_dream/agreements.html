@@ -1,0 +1,35 @@
+{% extends 'travelers_dream/base.html' %}
+
+{% block title %}
+    Соглашения
+{% endblock %}
+{% block content_admin %}
+    {% if employee_now.position.name != 'Бухгалтер' and request.user.is_staff %}
+        <h1 class="mb-4">Соглашения</h1>
+        <a class="btn btn-success mb-2" href="{% url 'createAgreement' %}">Добавить соглашение</a>
+        {% if agreements %}
+            {% for el in agreements %}
+                <div class="alert alert-dismissible alert-light row">
+                    <div class="col-5">
+                        <h5>№ {{ el.id }}</h5>
+                        <p> Дата создания: {{ el.date }} </p>
+                        <p> Клиент: {{ el.client }}</p>
+                        <p> Страна: {{ el.city.country }}</p>
+                        <p> Город: {{ el.city }}</p>
+                    </div>
+                    <div class="col-5">
+                        <p> Организация: {{ el.organization }}</p>
+                        <p> Сотрудник: {{ el.agent }} </p>
+                        <p> Кол-во участников: {{ el.number_participants }} </p>
+                        <p> Период поездки: <br> {{ el.date_start }} - {{ el.date_end }} </p>
+                    </div>
+                    <div class="col-2">
+                        <a href="/agreement/{{ el.id }}" class="btn btn-primary mb-2">Редактировать</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Нет ни одного соглашения</p>
+        {% endif %}
+    {% endif %}
+{% endblock %}

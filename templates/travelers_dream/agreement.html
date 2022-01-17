@@ -1,0 +1,84 @@
+{% extends 'travelers_dream/base.html' %}
+
+{% block title %}
+    Соглашение
+{% endblock %}
+{% block content_admin %}
+    {% if employee_now.position.name != 'Бухгалтер' and request.user.is_staff %}
+        <a class="btn btn-outline-dark mb-2 btn-sm" href="{% url 'agreements' %}">Назад</a>
+        <div class="d-flex flex-column-reverse flex-md-row justify-content-between">
+            <h2 class="mb-4">Соглашение № {{ agreement.id }}</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-10">
+                {% if error != '' %}
+                    <div class="alert alert-dismissible alert-danger">
+                        <strong>{{ error }}</strong>
+                    </div>
+                {% endif %}
+                <form method="post" class="d-flex flex-wrap row">
+                    {% csrf_token %}
+                    <div class="col-6">
+                        <label for="date" class="form-label">Дата создания</label>
+                        <input type="date" name="date" id="date" class="mb-3 form-control" required
+                               value="{{ agreement.date|date:"Y-m-d" }}">
+
+                        <label for="organization" class="form-label">Организация</label>
+                        <select class="form-select mb-3" id="organization" name="organization">
+                            {% for el in organizations %}
+                                <option value="{{ el.id }}" {% if el == employee.organization %} selected {% endif %}>
+                                    {{ el }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="agent" class="form-label">Агент</label>
+                        <select class="form-select mb-3" id="agent" name="agent">
+                            {% for el in agent %}
+                                <option value="{{ el.id }}" {% if agreement.agent == el %} selected {% endif %}>
+                                    {{ el.initials }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="client" class="form-label">Клиент</label>
+                        <select class="form-select mb-3" id="client" name="client">
+                            {% for el in client %}
+                                <option value="{{ el.id }}" {% if agreement.client == el %} selected {% endif %}>
+                                    {{ el.fio }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label for="number_participants" class="form-label">Кол-во участников</label>
+                        <input type="number" value="{{ agreement.number_participants }}" name="number_participants"
+                               id="number_participants" class="mb-3 form-control" required>
+
+                        <label for="city" class="form-label">Город посещения</label>
+                        <select class="form-select mb-3" id="city" name="city">
+                            {% for el in city %}
+                                <option value="{{ el.id }}" {% if agreement.city == el %}
+                                        selected {% endif %}> {{ el.country }}, {{ el.city }} </option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="date_start" class="form-label">Дата начала поездки</label>
+                        <input type="date" name="date_start" id="date_start" class="mb-3 form-control" required
+                               value="{{ agreement.date_start|date:"Y-m-d" }}">
+
+                        <label for="date_end" class="form-label">Дата окончания поездки</label>
+                        <input type="date" name="date_end" id="date_end" class="mb-3 form-control" required
+                               value="{{ agreement.date_end|date:"Y-m-d" }}">
+
+                        <input type="submit" class="btn btn-success" name="update"
+                               value="Обновить">
+                        <input type="submit" class="btn btn-success" name="update_redirect"
+                               value="Перейти к договору">
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

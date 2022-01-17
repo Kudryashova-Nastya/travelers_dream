@@ -1,0 +1,78 @@
+{% extends 'travelers_dream/base.html' %}
+
+{% block title %}
+    Добавление соглашения
+{% endblock %}
+
+{% block content_admin %}
+    {% if employee_now.position.name != 'Бухгалтер' and request.user.is_staff %}
+        <a class="btn btn-outline-dark mb-2 btn-sm" href="{% url 'agreements' %}">Назад</a>
+        <div class="d-flex flex-column-reverse flex-md-row justify-content-between">
+            <h1 class="mb-4">Добавление соглашения</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-10">
+                {% if error != '' %}
+                    <div class="alert alert-dismissible alert-danger">
+                        <strong>{{ error }}</strong>
+                        {{ form.non_form_errors }}
+                    </div>
+                {% endif %}
+
+                <form method="post" action="" class="d-flex flex-wrap row">
+                    {% csrf_token %}
+                    <div class="col-6">
+                        <label for="organization" class="form-label">Организация</label>
+                        <select class="form-select mb-3" id="organization" name="organization">
+                            {% for el in organizations %}
+                                <option value="{{ el.id }}"> {{ el.name }} </option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="agent" class="form-label">Агент</label>
+                        <select class="form-select mb-3" id="agent" name="agent">
+                            {% for el in agent %}
+                                {% if el.position.name != 'Бухгалтер' or el.position.name != 'Администратор' %}
+                                    <option value="{{ el.id }}"> {{ el.initials }} </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+
+                        <label for="client" class="form-label">Клиент</label>
+                        <select class="form-select mb-3" id="client" name="client">
+                            {% for el in client %}
+                                <option value="{{ el.id }}"> {{ el.fio }} </option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="number_participants" class="form-label">Кол-во участников</label>
+                        <input type="number" name="number_participants" id="number_participants" class="mb-3 form-control"
+                               placeholder="Кол-во участников" required>
+                    </div>
+                    <div class="col-6">
+                        <label for="city" class="form-label">Город посещения</label>
+                        <select class="form-select mb-3" id="city" name="city">
+                            {% for el in city %}
+                                <option value="{{ el.id }}"> {{ el.country }}, {{ el.city }} </option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="date_start" class="form-label">Дата начала поездки</label>
+                        <input type="date" name="date_start" id="date_start" class="mb-3 form-control"
+                               placeholder="дд.мм.гггг" required>
+
+                        <label for="date_end" class="form-label">Дата окончания поездки</label>
+                        <input type="date" name="date_end" id="date_end" class="mb-3 form-control"
+                               placeholder="дд.мм.гггг" required>
+
+                        <input type="submit" class="btn btn-success" name="add"
+                               value="Добавить в список">
+                        <input type="submit" class="btn btn-success" name="add_redirect"
+                               value="Перейти к договору">
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
