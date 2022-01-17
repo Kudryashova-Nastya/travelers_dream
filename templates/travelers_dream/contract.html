@@ -1,0 +1,82 @@
+{% extends 'travelers_dream/base.html' %}
+
+{% block title %}
+    Договор
+{% endblock %}
+
+{% block content_admin %}
+    {% if employee_now.position.name != 'Бухгалтер' and request.user.is_staff %}
+        <a class="btn btn-outline-dark mb-2 btn-sm" href="{% url 'contracts' %}">Назад</a>
+        <div class="d-flex flex-column-reverse flex-md-row justify-content-between">
+            <h2 class="mb-4">Договор № {{ contract.id }}</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-10">
+                {% if error != '' %}
+                    <div class="alert alert-dismissible alert-danger">
+                        <strong>{{ error }}</strong>
+                        {{ form.non_form_errors }}
+                    </div>
+                {% endif %}
+
+                <form method="post" action="" class="d-flex flex-wrap row">
+                    {% csrf_token %}
+                    <div class="col-6">
+                        <p> Соглашение: № {{ contract.agreement_id }} </p>
+                        <p> Статус: {{ contract.status }} </p>
+                        <p> Дата создания: {{ contract.date }} </p>
+                        <p> Клиент: {{ contract.agreement_id.client }}</p>
+                        <p> Кол-во участников: {{ contract.agreement_id.number_participants }} </p>
+                        <p> Период поездки: <br> {{ contract.agreement_id.date_start }}
+                            - {{ contract.agreement_id.date_end }} </p>
+                    </div>
+                    <div class="col-6">
+                        <label for="organization" class="form-label">Организация</label>
+                        <select class="form-select mb-3" id="organization" name="organization">
+                            {% for el in organizations %}
+                                <option value="{{ el.id }}" {% if el == contract.organization %}
+                                        selected {% endif %}> {{ el.name }} </option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="agent" class="form-label">Агент</label>
+                        <select class="form-select mb-3" id="agent" name="agent_id">
+                            {% for el in agent %}
+                                {% if el.position.name != 'Бухгалтер' or el.position.name != 'Администратор' %}
+                                    <option value="{{ el.id }}" {% if el == contract.agent_id %}
+                                            selected {% endif %}> {{ el.initials }} </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <label for="city" class="form-label">Город посещения</label>
+                        <select class="form-select mb-3" id="city" disabled>
+                            {% for el in city %}
+                                <option value="{{ el.id }}" {% if el == contract.agreement_id.city %}
+                                        selected {% endif %}> {{ el.country }}, {{ el.city }} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12">Бронь отеля</div>
+                    <div class="col-6">
+                        <label for="currency" class="form-label">Валюта</label>
+                        <select class="form-select mb-3" id="currency" name="currency">
+                            {% for el in currency %}
+                                <option value="{{ el.id }}" {% if el == contract.currency %}
+                                        selected {% endif %}> {{ el.currency_name }} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label for="sum" class="form-label">Сумма</label>
+                        <input type="number" value="{{ contract.agreement_id.number_participants }}" name="sum" id="sum"
+                               class="mb-3 form-control" placeholder="Сумма" required>
+
+                        <button type="submit" class="btn btn-success">Добавить</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'travelers_dream/base.html' %}
+
+{% block title %}
+    Договоры
+{% endblock %}
+{% block content_admin %}
+    {% if request.user.is_staff %}
+        <h1 class="mb-4">Договоры</h1>
+        {% if contracts %}
+            {% if employee_now.position.name != 'Бухгалтер' %}
+                {% for el in contracts %}
+                    <div class="alert alert-dismissible alert-light row">
+                        <div class="col-5">
+                            <h5>№ {{ el.id }}</h5>
+                            <p> Соглашение: № {{ el.agreement_id }} </p>
+                            <p><b> Статус: {{ el.status }} </b></p>
+                            <p> Дата создания: {{ el.date }} </p>
+                            <p> Клиент: {{ el.agreement_id.client }}</p>
+                            <p> Страна: {{ el.agreement_id.city.country }}</p>
+                            <p> Город: {{ el.agreement_id.city }}</p>
+                        </div>
+                        <div class="col-5">
+                            <p> Организация: {{ el.organization }}</p>
+                            <p> Сотрудник: {{ el.agent_id }} </p>
+                            <p> Кол-во участников: {{ el.agreement_id.number_participants }} </p>
+                            <p> Период поездки: <br> {{ el.agreement_id.date_start }} - {{ el.agreement_id.date_end }}
+                            </p>
+                            <p> Сумма: {{ el.sum }} </p>
+                            <p> Валюта: {{ el.currency }} </p>
+                        </div>
+                        <div class="col-2">
+                            <a href="/contract/{{ el.id }}" class="btn btn-primary mb-2">Редактировать</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% for el in contracts %}
+                    {% if el.status == 'Ожидание оплаты поездки' %}
+                        <div class="alert alert-dismissible alert-light row">
+                            <div class="col-5">
+                                <h5>№ {{ el.id }}</h5>
+                                <p> Соглашение: № {{ el.agreement_id }} </p>
+                                <p><b> Статус: {{ el.status }} </b></p>
+                                <p> Дата создания: {{ el.date }} </p>
+                                <p> Клиент: {{ el.agreement_id.client }}</p>
+                                <p> Страна: {{ el.agreement_id.city.country }}</p>
+                                <p> Город: {{ el.agreement_id.city }}</p>
+                            </div>
+                            <div class="col-5">
+                                <p> Организация: {{ el.organization }}</p>
+                                <p> Сотрудник: {{ el.agent_id }} </p>
+                                <p> Кол-во участников: {{ el.agreement_id.number_participants }} </p>
+                                <p> Период поездки: <br> {{ el.agreement_id.date_start }}
+                                    - {{ el.agreement_id.date_end }}
+                                </p>
+                                <p> Сумма: {{ el.sum }} </p>
+                                <p> Валюта: {{ el.currency }} </p>
+                            </div>
+                            <div class="col-2">
+                                <a href="/create-payment/{{ el.id }}" class="btn btn-primary mb-2">Провести оплату</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                {% for el in contracts %}
+                    {% if el.status == 'Оплачено' %}
+                        <div class="alert alert-dismissible alert-light row">
+                            <div class="col-5">
+                                <h5>№ {{ el.id }}</h5>
+                                <p> Соглашение: № {{ el.agreement_id }} </p>
+                                <p><b> Статус: {{ el.status }} </b></p>
+                                <p> Дата создания: {{ el.date }} </p>
+                                <p> Клиент: {{ el.agreement_id.client }}</p>
+                                <p> Страна: {{ el.agreement_id.city.country }}</p>
+                                <p> Город: {{ el.agreement_id.city }}</p>
+                            </div>
+                            <div class="col-5">
+                                <p> Организация: {{ el.organization }}</p>
+                                <p> Сотрудник: {{ el.agent_id }} </p>
+                                <p> Кол-во участников: {{ el.agreement_id.number_participants }} </p>
+                                <p> Период поездки: <br> {{ el.agreement_id.date_start }}
+                                    - {{ el.agreement_id.date_end }}
+                                </p>
+                                <p> Сумма: {{ el.sum }} </p>
+                                <p> Валюта: {{ el.currency }} </p>
+                            </div>
+                            <div class="col-2">
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <p>Нет ни одного договора</p>
+        {% endif %}
+    {% endif %}
+{% endblock %}
