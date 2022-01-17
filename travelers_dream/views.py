@@ -5,15 +5,11 @@ from django.contrib.auth.views import LoginView
 from django.db import transaction
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-# from .forms import UserRegistrationForm
-
 from .models import Employee, Client, PositionEmployee, Organization, StatusClient, AuthUser, Activity, Agreement, City, \
-    Contract, Currency
+    Contract, Currency, Payment
 from .forms import EmployeeCreateForm, ClientCreateForm, UserCreateForm, AuthUserForm, UserActivityForm, \
-    AgreementCreateForm, ContractCreateForm, ContractUpdateForm
+    AgreementCreateForm, ContractCreateForm, ContractUpdateForm, PaymentCreateForm, StatusContractUpdateForm
 
-
-# from django.http import HttpResponse
 
 def index(request):
     search_query = request.GET.get('search', '')
@@ -348,6 +344,65 @@ def contract(request, id):
     return render(request, 'travelers_dream/contract.html',
                   {'contract': contract, 'error': error, 'organizations': organizations, 'agent': agent,
                    'city': city, 'currency': currency})
+
+
+def create_payment(request, contract_id):
+    error = ''
+    contract = Contract.objects.get(id=contract_id)
+    # проверка на существование такой же оплаты
+    try:
+        check_payment = Payment.objects.get(contract=contract.id)
+    except Payment.DoesNotExist:
+        check_payment = None
+    if check_payment is not None:
+        error = 'По данному договору уже была произведена оплата'
+
+    # вычисление стоимости поездки в рублях
+    rub = contract.sum * contract.currency.course
+    payment = {'date': str(datetime.datetime.now().date()),
+               'contract': contract, 'amount_rub': rub}
+
+    if request.method == 'POST' and check_payment is None:
+        # добавление активности пользователя
+        try:
+            employee = Employee.objects.get(user=request.user.id)
+        except Employee.DoesNotExist:
+            employee = None
+
+        if employee is not None:
+            if 6 <= datetime.datetime.now().hour < 18:
+                form_activity = UserActivityForm(
+                    {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': True, 'night_activity': False})
+            else:
+                form_activity = UserActivityForm(
+                    {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': False, 'night_activity': True})
+            if form_activity.is_valid():
+                form_activity.save()
+
+        form = PaymentCreateForm(request.POST)
+        if form.is_valid():
+            form_instance = form.save(commit=False)
+            form_instance.date = datetime.datetime.now().date()
+            form_instance.contract = contract
+            form_instance.amount_rub = rub
+            form.save()
+            # меняем статус договора
+            form_status = StatusContractUpdateForm({'status': 'Оплачено'}, instance=contract)
+            if form_status.is_valid():
+                form_status.save()
+                return redirect('contracts')
+            else:
+                error = str(form_status.errors)
+        else:
+            error = str(form.errors)
+
+    organizations = Organization.objects.all()
+    return render(request, 'travelers_dream/create_payment.html',
+                  {'organizations': organizations, 'error': error, 'payment': payment})
 
 
 class Login(LoginView):

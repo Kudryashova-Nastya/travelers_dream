@@ -1,0 +1,47 @@
+{% extends 'travelers_dream/base.html' %}
+
+{% block title %}
+    Оплата
+{% endblock %}
+
+{% block content_admin %}
+    {% if employee_now.position.name == 'Бухгалтер' %}
+        <a class="btn btn-outline-dark mb-2 btn-sm" href="{% url 'contracts' %}">Назад</a>
+        <div class="d-flex flex-column-reverse flex-md-row justify-content-between">
+            <h2 class="mb-4">Оплата договора № {{ payment.contract }}</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-10">
+                {% if error != '' %}
+                    <div class="alert alert-dismissible alert-danger">
+                        <strong>{{ error }}</strong>
+                        {{ form.non_form_errors }}
+                    </div>
+                {% endif %}
+
+                <form method="post" action="" class="d-flex flex-wrap row">
+                    {% csrf_token %}
+                    <div class="col-6">
+                        <p> Дата оплаты: {{ payment.date }} </p>
+                        <p> Клиент: {{ payment.contract.agreement_id.client }} </p>
+                        <p> Валюта страны: {{ payment.contract.currency }} </p>
+                        <p> Курс валюты страны: {{ payment.contract.currency.course }} </p>
+                        <p> Сумма в валюте страны: {{ payment.contract.sum }} </p>
+
+                        <label for="organization" class="form-label">Организация, проводящая оплату</label>
+                        <select class="form-select mb-3" id="organization" name="organization">
+                            {% for el in organizations %}
+                                <option value="{{ el.id }}"> {{ el.name }} </option>
+                            {% endfor %}
+                        </select>
+
+                        <h5 class="mb-3">Сумма к оплате: {{ payment.amount_rub }} руб</h5>
+
+                        <button type="submit" class="btn btn-success">Провести оплату</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

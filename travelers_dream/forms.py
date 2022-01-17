@@ -2,7 +2,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from .models import Employee, Client, AuthUser, Activity, Agreement, Contract
+from .models import Employee, Client, AuthUser, Activity, Agreement, Contract, Payment
 from django.forms import ModelForm, forms, CharField, PasswordInput, TextInput
 
 
@@ -55,3 +55,13 @@ class ContractUpdateForm(ModelForm):
         fields = ['organization', 'agent_id', 'sum', 'currency']
 
 
+class PaymentCreateForm(ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['organization']
+
+
+class StatusContractUpdateForm(ModelForm):
+    class Meta:
+        model = Contract
+        fields = ['status']
