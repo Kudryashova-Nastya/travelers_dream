@@ -14,4 +14,6 @@ urlpatterns = [
     path('agreements', views.agreements, name="agreements"),
     path('agreement/<int:id>', views.agreement, name="agreement"),
     path('create-agreement', views.create_agreement, name="createAgreement"),
+    path('contracts', views.contracts, name="contracts"),
+    path('contract/<int:id>', views.contract, name="contract"),
 ]

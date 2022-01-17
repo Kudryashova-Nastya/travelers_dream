@@ -2,7 +2,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from .models import Employee, Client, AuthUser, Activity, Agreement
+from .models import Employee, Client, AuthUser, Activity, Agreement, Contract
 from django.forms import ModelForm, forms, CharField, PasswordInput, TextInput
 
 
@@ -43,17 +43,15 @@ class AgreementCreateForm(ModelForm):
         fields = ['date', 'organization', 'agent', 'client', 'number_participants', 'date_start',
                   'date_end', 'city']
 
-# class UserRegistrationForm(ModelForm):
-#     username = CharField(label='Username', widget=TextInput)
-#     password1 = CharField(label='Password', widget=PasswordInput)
-#     password2 = CharField(label='Repeat password', widget=PasswordInput)
-#
-#     class Meta:
-#         model = User
-#         fields = ('username', 'first_name', 'email')
-#
-#     def clean_password2(self):
-#         cd = self.cleaned_data
-#         if cd['password1'] != cd['password2']:
-#             raise ValidationError('Passwords don\'t match.')
-#         return cd['password2']
+class ContractCreateForm(ModelForm):
+    class Meta:
+        model = Contract
+        fields = ['date', 'agreement_id']
+
+
+class ContractUpdateForm(ModelForm):
+    class Meta:
+        model = Contract
+        fields = ['organization', 'agent_id', 'sum', 'currency']
+
+

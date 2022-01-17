@@ -12,7 +12,7 @@ class ClientAdmin(admin.ModelAdmin):
     list_display = ('fio', 'gender', 'dob')
 
 class ContractAdmin(admin.ModelAdmin):
-    list_display = ('date', 'client_id', 'sum', 'organization')
+    list_display = ('date', 'agreement_id', 'sum', 'organization')
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('fio', 'position', 'dob', 'organization')

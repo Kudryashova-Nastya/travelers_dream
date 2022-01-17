@@ -7,9 +7,10 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 # from .forms import UserRegistrationForm
 
-from .models import Employee, Client, PositionEmployee, Organization, StatusClient, AuthUser, Activity, Agreement, City
+from .models import Employee, Client, PositionEmployee, Organization, StatusClient, AuthUser, Activity, Agreement, City, \
+    Contract, Currency
 from .forms import EmployeeCreateForm, ClientCreateForm, UserCreateForm, AuthUserForm, UserActivityForm, \
-    AgreementCreateForm
+    AgreementCreateForm, ContractCreateForm, ContractUpdateForm
 
 
 # from django.http import HttpResponse
@@ -43,7 +44,7 @@ def employee(request, id):
                 employee_instance.save()
             return redirect('employees')
         else:
-            error = 'Форма заполнена некорректно'
+            error = str(form_employee.errors)
     user = AuthUser.objects.get(id=employee.user.id)
     positions = PositionEmployee.objects.all()
     organizations = Organization.objects.all()
@@ -143,7 +144,7 @@ def client(request, id):
             form.save()
             return redirect('clients')
         else:
-            error = 'Форма заполнена некорректно'
+            error = str(form.errors)
     statuses = StatusClient.objects.all()
     return render(request, 'travelers_dream/client.html', {'client': person, 'statuses': statuses, 'error': error})
 
@@ -176,7 +177,7 @@ def create_client(request):
             form.save()
             return redirect('clients')
         else:
-            error = 'Форма заполнена некорректно'
+            error = str(form.errors)
 
     statuses = StatusClient.objects.all()
     return render(request, 'travelers_dream/create_client.html', {'statuses': statuses, 'error': error})
@@ -196,7 +197,6 @@ def agreement(request, id):
             employee = Employee.objects.get(user=request.user.id)
         except Employee.DoesNotExist:
             employee = None
-
         if employee is not None:
             if 6 <= datetime.datetime.now().hour < 18:
                 form_activity = UserActivityForm(
@@ -214,9 +214,32 @@ def agreement(request, id):
         form = AgreementCreateForm(request.POST, instance=agreement)
         if form.is_valid():
             form.save()
+            if 'update' in request.POST:
+                return redirect('agreements')
+            elif 'update_redirect' in request.POST:
+                # проверяем существует ли связанный договор
+                try:
+                    contract = Contract.objects.get(agreement_id=agreement)
+                except Contract.DoesNotExist:
+                    contract = None
+
+                # если договор существует, переходим к нему
+                # иначе создаём договор и редиректим на него
+                if contract is None:
+                    form_contractCreate = ContractCreateForm(
+                        {'date': str(datetime.datetime.now().date()),
+                         'agreement_id': agreement})
+                    if form_contractCreate.is_valid():
+                        contract_instance = form_contractCreate.save(commit=False)
+                        contract_instance.save()
+                        return redirect('contract', id=contract_instance.id)
+                    else:
+                        error = str(form_contractCreate.errors)
+                else:
+                    return redirect('contract', id=contract.id)
             return redirect('agreements')
         else:
-            error = 'Форма заполнена некорректно'
+            error = str(form.errors)
 
     organizations = Organization.objects.all()
     agent = Employee.objects.all()
@@ -255,7 +278,19 @@ def create_agreement(request):
             form_instance = form.save(commit=False)
             form_instance.date = datetime.datetime.now().date()
             form_instance.save()
-            return redirect('contractCreate')
+            if 'add' in request.POST:
+                return redirect('agreements')
+            elif 'add_redirect' in request.POST:
+                # создаём договор и редиректим на него
+                form_contractCreate = ContractCreateForm(
+                    {'date': str(datetime.datetime.now().date()),
+                     'agreement_id': form_instance.id})
+                if form_contractCreate.is_valid():
+                    contract_instance = form_contractCreate.save(commit=False)
+                    contract_instance.save()
+                    return redirect('contract', id=contract_instance.id)
+                else:
+                    error = str(form_contractCreate.errors)
         else:
             error = str(form.errors)
 
@@ -265,6 +300,54 @@ def create_agreement(request):
     city = City.objects.all()
     return render(request, 'travelers_dream/create_agreement.html',
                   {'error': error, 'organizations': organizations, 'agent': agent, 'client': client, 'city': city})
+
+
+def contracts(request):
+    contracts = Contract.objects.all()
+    return render(request, 'travelers_dream/contracts.html', {'contracts': contracts})
+
+
+def contract(request, id):
+    error = ''
+    contract = Contract.objects.get(id=id)
+    if request.method == 'POST':
+        # добавление активности пользователя
+        try:
+            employee = Employee.objects.get(user=request.user.id)
+        except Employee.DoesNotExist:
+            employee = None
+        if employee is not None:
+            if 6 <= datetime.datetime.now().hour < 18:
+                form_activity = UserActivityForm(
+                    {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': True, 'night_activity': False})
+            else:
+                form_activity = UserActivityForm(
+                    {'user_id': employee.id, 'date': str(datetime.datetime.now().date()),
+                     'time': str(datetime.datetime.now().time()),
+                     'day_activity': False, 'night_activity': True})
+            if form_activity.is_valid():
+                form_activity.save()
+
+        form = ContractUpdateForm(request.POST, instance=contract)
+        if form.is_valid():
+            form_instance = form.save(commit=False)
+            form_instance.date = datetime.datetime.now().date()
+            form_instance.agreement_id = contract.agreement_id
+            form_instance.status = 'Ожидание оплаты поездки'
+            form_instance.save()
+            return redirect('contracts')
+        else:
+            error = str(form.errors)
+
+    organizations = Organization.objects.all()
+    agent = Employee.objects.all()
+    currency = Currency.objects.all()
+    city = City.objects.all()
+    return render(request, 'travelers_dream/contract.html',
+                  {'contract': contract, 'error': error, 'organizations': organizations, 'agent': agent,
+                   'city': city, 'currency': currency})
 
 
 class Login(LoginView):

@@ -26,7 +26,7 @@
             <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'employees' %}">Сотрудники</a>
             <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'clients' %}">Клиенты</a>
             <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'agreements' %}">Соглашения</a>
-            <a class="me-3 py-2 text-dark text-decoration-none" href="#">Договоры</a>
+            <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'contracts' %}">Договоры</a>
             <a class="me-3 py-2 text-dark text-decoration-none" href="#">Оплаты</a>
             <a class="me-3 py-2 text-dark text-decoration-none" href="/admin">Админка</a>
 
@@ -35,8 +35,9 @@
             {% if  employee_now.position.name != 'Бухгалтер' %}
                 <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'clients' %}">Клиенты</a>
                 <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'agreements' %}">Соглашения</a>
-                <a class="me-3 py-2 text-dark text-decoration-none" href="#">Договоры</a>
+                <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'contracts' %}">Договоры</a>
             {% else %}
+                <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'contracts' %}">Договоры</a>
                 <a class="me-3 py-2 text-dark text-decoration-none" href="#">Оплаты</a>
             {% endif %}
         {% endif %}

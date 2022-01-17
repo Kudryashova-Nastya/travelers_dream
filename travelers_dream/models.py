@@ -126,18 +126,19 @@ class Client(models.Model):
 
 class Contract(models.Model):
     date = models.DateField()
-    organization = models.ForeignKey('Organization', models.DO_NOTHING, db_column='organization')
-    agreement_id = models.IntegerField()
-    agent_id = models.IntegerField()
-    client_id = models.IntegerField()
-    date_start = models.DateField()
-    date_end = models.DateField()
-    participants = models.TextField(db_collation='utf8mb4_bin')
-    sum = models.IntegerField()
-    currency = models.ForeignKey('Currency', models.DO_NOTHING, db_column='currency')
+    organization = models.ForeignKey('Organization', models.DO_NOTHING, db_column='organization', blank=True, null=True)
+    agreement_id = models.ForeignKey('Agreement', models.DO_NOTHING, db_column='agreement_id')
+    agent_id = models.ForeignKey('Employee', models.DO_NOTHING, db_column='agent_id', blank=True, null=True)
+    # client_id = models.ForeignKey('Client', models.DO_NOTHING, blank=True, null=True)
+    # date_start = models.DateField()
+    # date_end = models.DateField()
+    # participants = models.IntegerField()
+    sum = models.IntegerField(blank=True, null=True)
+    status = models.CharField(max_length=256, default='Оформление договора')
+    currency = models.ForeignKey('Currency', models.DO_NOTHING, db_column='currency', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'contract'
 
     def __str__(self):
@@ -145,16 +146,18 @@ class Contract(models.Model):
 
 
 class Currency(models.Model):
-    code = models.IntegerField()
-    name = models.CharField(max_length=64)
-    rate = models.IntegerField()
+    currency_code = models.IntegerField()
+    currency_name = models.CharField(max_length=64)
+    course = models.IntegerField()
+    letter_code = models.CharField(max_length=8)
+    units = models.CharField(max_length=7)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'currency'
 
     def __str__(self):
-        return self.name
+        return self.currency_name
 
 
 class DjangoAdminLog(models.Model):
