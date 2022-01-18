@@ -293,17 +293,17 @@ class PositionEmployee(models.Model):
 
 
 class Reservation(models.Model):
-    hotel = models.ForeignKey(Hotel, models.DO_NOTHING)
-    room_type = models.ForeignKey('RoomType', models.DO_NOTHING, db_column='room_type')
-    start = models.DateTimeField()
-    end = models.DateTimeField()
-    amount = models.IntegerField()
+    hotel = models.ForeignKey(Hotel, models.DO_NOTHING, default=2)
+    room_type = models.ForeignKey('RoomType', models.DO_NOTHING, db_column='room_type', default=1)
+    start = models.DateField(blank=True, null=True)
+    end = models.DateField(blank=True, null=True)
+    # amount = models.IntegerField()
     contract = models.ForeignKey(Contract, models.DO_NOTHING)
-    currency = models.IntegerField()
+    # currency = models.IntegerField()
     food = models.CharField(max_length=3)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'reservation'
 
     def __str__(self):

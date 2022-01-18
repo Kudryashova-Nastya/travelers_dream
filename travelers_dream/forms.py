@@ -2,7 +2,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from .models import Employee, Client, AuthUser, Activity, Agreement, Contract, Payment
+from .models import Employee, Client, AuthUser, Activity, Agreement, Contract, Payment, Reservation
 from django.forms import ModelForm, forms, CharField, PasswordInput, TextInput
 
 
@@ -65,3 +65,9 @@ class StatusContractUpdateForm(ModelForm):
     class Meta:
         model = Contract
         fields = ['status']
+
+
+class ReservationUpdateForm(ModelForm):
+    class Meta:
+        model = Reservation
+        fields = ['hotel', 'room_type', 'start', 'end', 'food']

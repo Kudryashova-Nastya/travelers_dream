@@ -6,9 +6,10 @@ from django.db import transaction
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from .models import Employee, Client, PositionEmployee, Organization, StatusClient, AuthUser, Activity, Agreement, City, \
-    Contract, Currency, Payment
+    Contract, Currency, Payment, RoomType, Hotel, Reservation
 from .forms import EmployeeCreateForm, ClientCreateForm, UserCreateForm, AuthUserForm, UserActivityForm, \
-    AgreementCreateForm, ContractCreateForm, ContractUpdateForm, PaymentCreateForm, StatusContractUpdateForm
+    AgreementCreateForm, ContractCreateForm, ContractUpdateForm, PaymentCreateForm, StatusContractUpdateForm, \
+    ReservationUpdateForm
 
 
 def index(request):
@@ -220,17 +221,23 @@ def agreement(request, id):
                     contract = None
 
                 # если договор существует, переходим к нему
-                # иначе создаём договор и редиректим на него
+                # иначе создаём договор (вместе с бронью) и редиректим на него
                 if contract is None:
                     form_contractCreate = ContractCreateForm(
                         {'date': str(datetime.datetime.now().date()),
                          'agreement_id': agreement})
-                    if form_contractCreate.is_valid():
+                    form_reservationCreate = ReservationUpdateForm({
+                        'hotel': 2, 'room_type': 1, 'food': 'RO'
+                    })
+                    if form_contractCreate.is_valid() and form_reservationCreate.is_valid():
                         contract_instance = form_contractCreate.save(commit=False)
                         contract_instance.save()
+                        reservation_instance = form_reservationCreate.save(commit=False)
+                        reservation_instance.contract = contract_instance
+                        reservation_instance.save()
                         return redirect('contract', id=contract_instance.id)
                     else:
-                        error = str(form_contractCreate.errors)
+                        error = str(form_contractCreate.errors)+str(form_reservationCreate.errors)
                 else:
                     return redirect('contract', id=contract.id)
             return redirect('agreements')
@@ -277,16 +284,22 @@ def create_agreement(request):
             if 'add' in request.POST:
                 return redirect('agreements')
             elif 'add_redirect' in request.POST:
-                # создаём договор и редиректим на него
+                # создаём договор (вместе с бронью) и редиректим на него
                 form_contractCreate = ContractCreateForm(
                     {'date': str(datetime.datetime.now().date()),
                      'agreement_id': form_instance.id})
-                if form_contractCreate.is_valid():
+                form_reservationCreate = ReservationUpdateForm({
+                    'hotel': 2, 'room_type': 1, 'food': 'RO'
+                })
+                if form_contractCreate.is_valid() and form_reservationCreate.is_valid():
                     contract_instance = form_contractCreate.save(commit=False)
                     contract_instance.save()
+                    reservation_instance = form_reservationCreate.save(commit=False)
+                    reservation_instance.contract = contract_instance
+                    reservation_instance.save()
                     return redirect('contract', id=contract_instance.id)
                 else:
-                    error = str(form_contractCreate.errors)
+                    error = str(form_contractCreate.errors) + str(form_reservationCreate.errors)
         else:
             error = str(form.errors)
 
@@ -306,6 +319,8 @@ def contracts(request):
 def contract(request, id):
     error = ''
     contract = Contract.objects.get(id=id)
+    reservation = Reservation.objects.get(contract=contract.id)
+
     if request.method == 'POST':
         # добавление активности пользователя
         try:
@@ -327,28 +342,38 @@ def contract(request, id):
                 form_activity.save()
 
         form = ContractUpdateForm(request.POST, instance=contract)
-        if form.is_valid():
+        form_reservation = ReservationUpdateForm(request.POST, instance=reservation)
+        if form.is_valid() and form_reservation.is_valid():
             form_instance = form.save(commit=False)
             form_instance.date = datetime.datetime.now().date()
             form_instance.agreement_id = contract.agreement_id
-            form_instance.status = 'Ожидание оплаты поездки'
+            if contract.status == 'Оформление договора':
+                form_instance.status = 'Ожидание оплаты поездки'
             form_instance.save()
+
+            reservation_instance = form_reservation.save(commit=False)
+            reservation_instance.contract = form_instance
+            reservation_instance.save()
             return redirect('contracts')
         else:
-            error = str(form.errors)
+            error = str(form.errors)+str(form_reservation.errors)
 
     organizations = Organization.objects.all()
     agent = Employee.objects.all()
     currency = Currency.objects.all()
     city = City.objects.all()
+    room_types = RoomType.objects.all()
+    hotels = Hotel.objects.all()
     return render(request, 'travelers_dream/contract.html',
                   {'contract': contract, 'error': error, 'organizations': organizations, 'agent': agent,
-                   'city': city, 'currency': currency})
+                   'city': city, 'currency': currency, 'room_types': room_types, 'hotels': hotels,
+                   'reservation': reservation})
 
 
 def payments(request):
     payments = Payment.objects.all()
     return render(request, 'travelers_dream/payments.html', {'payments': payments})
+
 
 def create_payment(request, contract_id):
     error = ''

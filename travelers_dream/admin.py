@@ -18,7 +18,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('fio', 'position', 'dob', 'organization')
 
 class ReservationAdmin(admin.ModelAdmin):
-    list_display = ('hotel', 'room_type', 'start', 'end', 'amount')
+    list_display = ('hotel', 'room_type', 'start', 'end', 'food')
 
 class TicketAdmin(admin.ModelAdmin):
     list_display = ('transport', 'contract', 'transfer')
