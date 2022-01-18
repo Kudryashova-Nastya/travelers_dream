@@ -28,6 +28,7 @@
             <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'agreements' %}">Соглашения</a>
             <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'contracts' %}">Договоры</a>
             <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'payments' %}">Оплаты</a>
+            <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'currency_list' %}">Курс валют</a>
             <a class="me-3 py-2 text-dark text-decoration-none" href="/admin">Админка</a>
 
 
@@ -39,6 +40,8 @@
             {% else %}
                 <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'contracts' %}">Договоры</a>
                 <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'payments' %}">Оплаты</a>
+                <a class="me-3 py-2 text-dark text-decoration-none" href="{% url 'currency_list' %}">Курс валют</a>
+
             {% endif %}
         {% endif %}
         {% if request.user.is_authenticated %}

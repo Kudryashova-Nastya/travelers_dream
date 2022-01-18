@@ -133,7 +133,7 @@ class Contract(models.Model):
     # date_start = models.DateField()
     # date_end = models.DateField()
     # participants = models.IntegerField()
-    sum = models.IntegerField(blank=True, null=True)
+    sum = models.FloatField(blank=True, null=True)
     status = models.CharField(max_length=256, default='Оформление договора')
     currency = models.ForeignKey('Currency', models.DO_NOTHING, db_column='currency', blank=True, null=True)
 
@@ -148,7 +148,7 @@ class Contract(models.Model):
 class Currency(models.Model):
     currency_code = models.IntegerField()
     currency_name = models.CharField(max_length=64)
-    course = models.IntegerField()
+    course = models.FloatField()
     letter_code = models.CharField(max_length=8)
     units = models.CharField(max_length=7)
 
@@ -271,7 +271,7 @@ class Payment(models.Model):
     date = models.DateField()
     organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     contract = models.ForeignKey(Contract, models.DO_NOTHING)
-    amount_rub = models.IntegerField()
+    amount_rub = models.FloatField()
 
     class Meta:
         managed = False

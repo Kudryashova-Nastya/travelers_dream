@@ -1,0 +1,46 @@
+{% extends 'travelers_dream/base.html' %}
+
+{% block title %}
+    Курс валюс
+{% endblock %}
+{% block content_admin %}
+    {% if employee_now.position.name == 'Бухгалтер' %}
+        <h1 class="mb-4">Курс валют</h1>
+        <div class="container col-md-9 mb-3">
+            <div class="row">
+              <form method="post">
+                {% csrf_token %}
+               <div class="col name_user">
+                   <input name="account_in" type="submit" value="Загрузить актуальный курс" class="btn btn-success">
+               </div>
+              </form>
+           </div>
+        </div>
+
+        <div class="container col-md-9">
+            <table class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">Цифр.код</th>
+                    <th scope="col">Букв.код</th>
+                    <th scope="col">Единиц</th>
+                    <th scope="col">Валюта</th>
+                    <th scope="col">Курс</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for item in currency_list %}
+                    <tr>
+                      <td class="">{{item.currency_code}}</td>
+                      <td class="">{{item.letter_code}}</td>
+                      <td class="">{{item.units}}</td>
+                      <td class="">{{item.currency_name}}</td>
+                      <td class="">{{item.course}}</td>
+                    </tr>
+                  {% endfor %}
+                <tbody>
+            </table>
+          </div>
+
+    {% endif %}
+{% endblock %}

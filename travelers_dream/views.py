@@ -1,6 +1,8 @@
 import datetime
 
-# from django.contrib.auth.forms import UserCreationForm
+from requests import get
+from bs4 import BeautifulSoup as bs
+
 from django.contrib.auth.views import LoginView
 from django.db import transaction
 from django.shortcuts import render, redirect
@@ -237,7 +239,7 @@ def agreement(request, id):
                         reservation_instance.save()
                         return redirect('contract', id=contract_instance.id)
                     else:
-                        error = str(form_contractCreate.errors)+str(form_reservationCreate.errors)
+                        error = str(form_contractCreate.errors) + str(form_reservationCreate.errors)
                 else:
                     return redirect('contract', id=contract.id)
             return redirect('agreements')
@@ -356,7 +358,7 @@ def contract(request, id):
             reservation_instance.save()
             return redirect('contracts')
         else:
-            error = str(form.errors)+str(form_reservation.errors)
+            error = str(form.errors) + str(form_reservation.errors)
 
     organizations = Organization.objects.all()
     agent = Employee.objects.all()
@@ -432,6 +434,35 @@ def create_payment(request, contract_id):
     organizations = Organization.objects.all()
     return render(request, 'travelers_dream/create_payment.html',
                   {'organizations': organizations, 'error': error, 'payment': payment})
+
+
+def currency_list(request):
+    headers = {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        "Host": "www.cbr.ru:443",
+        "Accept-Encoding": "gzip, deflate, sdch, br",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36"
+    }
+
+    body = get('http://www.cbr.ru/currency_base/daily/', headers=headers)
+    for_bs = body.text
+    soup = bs(for_bs, 'html.parser')
+
+    currency_list = Currency.objects.all()
+    currency = soup.find_all('td')
+
+    if request.method == 'POST':
+        i = 4
+        for item in currency_list:
+            Currency.objects.filter(id=item.id).update(course=currency[i].text.replace(',', '.'))
+            i += 5
+
+    context = {
+        'currency_list': currency_list
+
+    }
+    return render(request, 'travelers_dream/currency_list.html', context)
 
 
 class Login(LoginView):

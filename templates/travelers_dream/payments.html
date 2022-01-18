@@ -4,7 +4,7 @@
     Оплаты
 {% endblock %}
 {% block content_admin %}
-    {% if request.user.is_staff %}
+    {% if employee_now.position.name == 'Бухгалтер' %}
         <h1 class="mb-4">Оплаты</h1>
         {% if payments %}
             {% if employee_now.position.name == 'Бухгалтер' %}

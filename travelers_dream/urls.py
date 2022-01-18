@@ -18,4 +18,5 @@ urlpatterns = [
     path('contract/<int:id>', views.contract, name="contract"),
     path('create-payment/<int:contract_id>', views.create_payment, name="createPayment"),
     path('payments', views.payments, name="payments"),
+    path('currency_list', views.currency_list, name='currency_list'),
 ]
