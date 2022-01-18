@@ -1,0 +1,33 @@
+{% extends 'travelers_dream/base.html' %}
+
+{% block title %}
+    Оплаты
+{% endblock %}
+{% block content_admin %}
+    {% if request.user.is_staff %}
+        <h1 class="mb-4">Оплаты</h1>
+        {% if payments %}
+            {% if employee_now.position.name == 'Бухгалтер' %}
+                {% for el in payments %}
+                    <div class="alert alert-dismissible alert-light row">
+                        <div class="col-6">
+                            <h5>№ {{ el.id }}</h5>
+                            <p>Оплата договора № {{ el.contract }}</p>
+                            <p> Дата оплаты: {{ el.date }} </p>
+                            <p> Клиент: {{ el.contract.agreement_id.client }} </p>
+                            <p> Организация, проводящая оплату: {{ el.organization }} </p>
+                        </div>
+                        <div class="col-6">
+                            <p> Валюта страны: {{ el.contract.currency }} </p>
+                            <p> Курс валюты страны: {{ el.contract.currency.course }} </p>
+                            <p> Сумма в валюте страны: {{ el.contract.sum }} </p>
+                            <p> <b>Сумма к оплате: {{ el.amount_rub }} руб</b></p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <p>Нет ни одной оплаты</p>
+        {% endif %}
+    {% endif %}
+{% endblock %}

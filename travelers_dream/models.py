@@ -269,7 +269,7 @@ class Organization(models.Model):
 
 class Payment(models.Model):
     date = models.DateField()
-    organization = models.IntegerField()
+    organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organization')
     contract = models.ForeignKey(Contract, models.DO_NOTHING)
     amount_rub = models.IntegerField()
 

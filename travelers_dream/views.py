@@ -346,6 +346,10 @@ def contract(request, id):
                    'city': city, 'currency': currency})
 
 
+def payments(request):
+    payments = Payment.objects.all()
+    return render(request, 'travelers_dream/payments.html', {'payments': payments})
+
 def create_payment(request, contract_id):
     error = ''
     contract = Contract.objects.get(id=contract_id)
@@ -394,7 +398,7 @@ def create_payment(request, contract_id):
             form_status = StatusContractUpdateForm({'status': 'Оплачено'}, instance=contract)
             if form_status.is_valid():
                 form_status.save()
-                return redirect('contracts')
+                return redirect('payments')
             else:
                 error = str(form_status.errors)
         else:
