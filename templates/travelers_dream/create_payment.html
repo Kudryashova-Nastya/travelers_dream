@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content_admin %}
-    {% if employee_now.position.name == 'Бухгалтер' %}
+    {% if employee_now.position.name == 'Бухгалтер' and request.user.is_staff %}
         <a class="btn btn-outline-dark mb-2 btn-sm" href="{% url 'payments' %}">Назад</a>
         <div class="d-flex flex-column-reverse flex-md-row justify-content-between">
             <h2 class="mb-4">Оплата договора № {{ payment.contract }}</h2>
